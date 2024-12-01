@@ -9,9 +9,16 @@ import SwiftUI
 
 @main
 struct DailozApp: App {
+
+    init() {
+        let tabBar = UITabBarAppearance()
+        tabBar.configureWithTransparentBackground()
+        UITabBar.appearance().standardAppearance = tabBar
+    }
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TabScreen()
         }
     }
 }
