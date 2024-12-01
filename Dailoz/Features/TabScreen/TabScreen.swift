@@ -18,7 +18,9 @@ struct TabScreen: View {
             CustomTabBar()
         }
         .fullScreenCover(isPresented: $showTaskPlanScreen) {
-            TaskPlanScreen()
+            NavigationStack {
+                TaskPlanScreen()
+            }
         }
     }
 
@@ -139,27 +141,27 @@ enum TabItem: String, Identifiable {
 
     var icon: ImageResource {
         switch self {
-            case .home:
-                    .home
-            case .task:
-                    .task
-            case .activity:
-                    .activity
-            case .profile:
-                    .profile
+        case .home:
+            .home
+        case .task:
+            .task
+        case .activity:
+            .activity
+        case .profile:
+            .profile
         }
     }
 
     var selectedIcon: ImageResource {
         switch self {
-            case .home:
-                    .homeFill
-            case .task:
-                    .taskFill
-            case .activity:
-                    .activityFill
-            case .profile:
-                    .profileFill
+        case .home:
+            .homeFill
+        case .task:
+            .taskFill
+        case .activity:
+            .activityFill
+        case .profile:
+            .profileFill
         }
     }
 }

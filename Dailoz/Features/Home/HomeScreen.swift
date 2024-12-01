@@ -10,9 +10,8 @@ import SwiftUI
 struct HomeScreen: View {
     var body: some View {
         List {
-            ForEach(1..<51) { index in
+            ForEach(1 ..< 51) { index in
                 Text("Item \(index)")
-
             }
         }
         .navigationTitle("Home Screen")

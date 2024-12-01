@@ -8,27 +8,217 @@
 import SwiftUI
 
 struct TaskPlanScreen: View {
-    
     @Environment(\.dismiss) var dismiss
 
     @State private var title = ""
     @State private var date = Date()
     @State private var startTime = Date()
-    @State private var endTiem = Date()
+    @State private var endTime = Date()
     @State private var description = ""
-    @State private var type = ""
+    @State private var type = TType.personal
     @State private var tags: [String] = []
 
+    // MARK: - View UI State
 
+    @State private var isValid = false
+    @State private var showDatePicker = false
+    @State private var showStartTimePicker = false
+    @State private var showEndTimePicker = false
+    @State private var columns: [GridItem] = .init(repeating: .init(.flexible()), count: 4)
 
     var body: some View {
-        Form {
-            
-        }
+        ScrollView {
+            VStack(spacing: 22) {
+                CustomTextField(title: "Title", text: $title)
+                    .onChange(of: title) {
+                        isValid = !title.isEmpty
+                    }
 
+                CustomDatePicker()
+
+                TimeSection()
+
+                CustomTextField(title: "Description", text: $description)
+
+                TypeSection()
+
+                TagsSection()
+
+                Spacer()
+
+                Button {} label: {
+                    AppButton(title: "Create", isDisabled: !isValid)
+                }
+                .disabled(!isValid)
+            }
+            .padding()
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.title3.bold())
+                        .foregroundStyle(.royalBlue)
+                }
+            }
+        }
+        .navigationTitle("Add Task")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func CustomTextField(title: String, text: Binding<String>) -> some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Text(title)
+                .font(.robotoM(16))
+                .foregroundStyle(.textSecondary)
+
+            TextField("", text: text)
+                .font(.robotoM(18))
+                .foregroundStyle(.textPrimary)
+                .textInputAutocapitalization(.never)
+                .keyboardType(.asciiCapable)
+                .autocorrectionDisabled(true)
+
+            Divider()
+        }
+    }
+
+    private func CustomDatePicker() -> some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Text("Date")
+                .font(.robotoM(16))
+                .foregroundStyle(.textSecondary)
+
+            HStack {
+                Text(date.format(.dMMMMyyyy))
+                    .font(.robotoM(18))
+                    .foregroundStyle(.textPrimary)
+
+                Spacer()
+
+                Button {
+                    showDatePicker.toggle()
+                } label: {
+                    Image(systemName: "calendar")
+                        .frame(width: 24, height: 24)
+                        .foregroundStyle(.royalBlue.opacity(0.7))
+                }
+                .sheet(isPresented: $showDatePicker) {
+                    DatePicker("", selection: $date, displayedComponents: .date)
+                        .datePickerStyle(.graphical)
+                        .padding()
+                        .presentationDetents([.medium])
+                        .presentationDragIndicator(.visible)
+                }
+            }
+
+            Divider()
+        }
+    }
+
+    private func TimeSection() -> some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Text("Time")
+                .font(.robotoM(16))
+                .foregroundStyle(.textSecondary)
+
+            HStack {
+                Button {
+                    showStartTimePicker.toggle()
+                } label: {
+                    VStack {
+                        Text(startTime.format(.hhmm_a))
+                            .font(.robotoM(18))
+                            .foregroundStyle(.textPrimary)
+                        Divider()
+                    }
+                }
+                .sheet(isPresented: $showStartTimePicker) {
+                    DatePicker("", selection: $startTime, displayedComponents: .hourAndMinute)
+                        .datePickerStyle(.wheel)
+                        .labelsHidden()
+                        .padding()
+                        .presentationDetents([.medium])
+                        .presentationDragIndicator(.visible)
+                }
+
+                Spacer()
+                    .frame(width: 18)
+
+                Button {
+                    showEndTimePicker.toggle()
+                } label: {
+                    VStack {
+                        Text(endTime.format(.hhmm_a))
+                            .font(.robotoM(18))
+                            .foregroundStyle(.textPrimary)
+                        Divider()
+                    }
+                }
+                .sheet(isPresented: $showEndTimePicker) {
+                    DatePicker("", selection: $endTime, displayedComponents: .hourAndMinute)
+                        .datePickerStyle(.wheel)
+                        .labelsHidden()
+                        .padding()
+                        .presentationDetents([.medium])
+                        .presentationDragIndicator(.visible)
+                }
+            }
+        }
+    }
+
+    private func TypeSection() -> some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Text("Type")
+                .font(.robotoM(16))
+                .foregroundStyle(.textSecondary)
+
+            Picker("", selection: $type) {
+                ForEach(TType.allCases) { type in
+                    Text(type.rawValue)
+                        .tag(type)
+                }
+            }
+            .pickerStyle(.segmented)
+        }
+    }
+
+    @ViewBuilder
+    private func TagsSection() -> some View {
+        VStack(alignment: .leading, spacing: 18) {
+            Text("Tags")
+                .font(.robotoM(16))
+                .foregroundStyle(.textSecondary)
+
+            LazyVGrid(columns: columns) {
+                ForEach(0 ..< 7) { tag in
+                    Text("Tag \(tag)")
+                        .font(.robotoR(16))
+                        .foregroundStyle(.textSecondary)
+                        .padding(.horizontal, 22)
+                        .padding(.vertical, 10)
+                        .background {
+                            Capsule()
+                                .fill(.textSecondary.opacity(0.3))
+                        }
+                }
+            }
+
+            Button {} label: {
+                Text("+ Add new tag")
+                    .font(.robotoM(14))
+                    .foregroundStyle(.royalBlue)
+                    .frame(height: 30)
+                    .frame(maxWidth: .infinity, alignment: .center)
+            }
+        }
     }
 }
 
 #Preview {
-    TaskPlanScreen()
+    NavigationStack {
+        TaskPlanScreen()
+    }
 }

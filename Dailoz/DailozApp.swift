@@ -9,11 +9,14 @@ import SwiftUI
 
 @main
 struct DailozApp: App {
-
     init() {
-        let tabBar = UITabBarAppearance()
-        tabBar.configureWithTransparentBackground()
-        UITabBar.appearance().standardAppearance = tabBar
+        UITabBar.appearance().standardAppearance.configureWithTransparentBackground()
+
+        let segmentedAppearance = UISegmentedControl.appearance()
+        segmentedAppearance.backgroundColor = .royalBlue.withAlphaComponent(0.15)
+        segmentedAppearance.setDividerImage(UIImage(), forLeftSegmentState: .normal, rightSegmentState: .normal, barMetrics: .default)
+        segmentedAppearance.selectedSegmentTintColor = .royalBlue
+        segmentedAppearance.setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)
     }
 
     var body: some Scene {
