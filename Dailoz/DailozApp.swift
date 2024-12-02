@@ -9,6 +9,8 @@ import SwiftUI
 
 @main
 struct DailozApp: App {
+    private let coreDataStack = CoreDataStack.shared
+
     init() {
         UITabBar.appearance().standardAppearance.configureWithTransparentBackground()
 
@@ -22,6 +24,7 @@ struct DailozApp: App {
     var body: some Scene {
         WindowGroup {
             TabScreen()
+                .environment(\.managedObjectContext, coreDataStack.viewContext)
         }
     }
 }

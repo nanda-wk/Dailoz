@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct TaskPlanScreen: View {
+    @Environment(\.managedObjectContext) var moc
     @Environment(\.dismiss) var dismiss
+    @FetchRequest(fetchRequest: Tag.all()) private var tagList
 
     @State private var title = ""
     @State private var date = Date()
@@ -16,7 +18,7 @@ struct TaskPlanScreen: View {
     @State private var endTime = Date()
     @State private var description = ""
     @State private var type = TType.personal
-    @State private var tags: [String] = []
+    @State private var tags: Set<Tag> = []
 
     // MARK: - View UI State
 
@@ -25,6 +27,12 @@ struct TaskPlanScreen: View {
     @State private var showStartTimePicker = false
     @State private var showEndTimePicker = false
     @State private var columns: [GridItem] = .init(repeating: .init(.flexible()), count: 4)
+    @State private var showTagSheet = false
+    @State private var showNewTagButton = true
+
+    @State private var tagToUpdate: Tag?
+
+    private let coreDataStack = CoreDataStack.shared
 
     var body: some View {
         ScrollView {
@@ -66,8 +74,13 @@ struct TaskPlanScreen: View {
         }
         .navigationTitle("Add Task")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            checkTagsCount()
+        }
     }
+}
 
+extension TaskPlanScreen {
     private func CustomTextField(title: String, text: Binding<String>) -> some View {
         VStack(alignment: .leading, spacing: 18) {
             Text(title)
@@ -111,6 +124,7 @@ struct TaskPlanScreen: View {
                         .padding()
                         .presentationDetents([.medium])
                         .presentationDragIndicator(.visible)
+                        .tint(.royalBlue)
                 }
             }
 
@@ -193,32 +207,82 @@ struct TaskPlanScreen: View {
                 .foregroundStyle(.textSecondary)
 
             LazyVGrid(columns: columns) {
-                ForEach(0 ..< 7) { tag in
-                    Text("Tag \(tag)")
-                        .font(.robotoR(16))
-                        .foregroundStyle(.textSecondary)
-                        .padding(.horizontal, 22)
-                        .padding(.vertical, 10)
-                        .background {
-                            Capsule()
-                                .fill(.textSecondary.opacity(0.3))
+                ForEach(tagList) { tag in
+                    TagCapsule(tag)
+                        .onTapGesture {
+                            toggleTagSelection(tag)
                         }
                 }
             }
 
-            Button {} label: {
-                Text("+ Add new tag")
-                    .font(.robotoM(14))
-                    .foregroundStyle(.royalBlue)
-                    .frame(height: 30)
-                    .frame(maxWidth: .infinity, alignment: .center)
+            if showNewTagButton {
+                Button {
+                    tagToUpdate = nil
+                    showTagSheet.toggle()
+                } label: {
+                    Text("+ Add new tag")
+                        .font(.robotoM(14))
+                        .foregroundStyle(.royalBlue)
+                        .frame(height: 30)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                }
             }
         }
+        .sheet(isPresented: $showTagSheet) {
+            checkTagsCount()
+        } content: {
+            TagSheet(tag: $tagToUpdate)
+                .presentationDetents([.fraction(0.4)])
+        }
+    }
+
+    @ViewBuilder
+    private func TagCapsule(_ tag: Tag) -> some View {
+        let isSelected = isSelectedTag(tag)
+        Text(tag.name)
+            .font(.robotoR(16))
+            .foregroundStyle(isSelected ? .white : Color(hex: tag.color))
+            .lineLimit(1)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .frame(maxWidth: .infinity)
+            .background(
+                Capsule()
+                    .fill(Color(hex: tag.color).opacity(isSelected ? 1 : 0.2))
+            )
+            .contextMenu {
+                Button("Edit", systemImage: "pencil") {
+                    tagToUpdate = tag
+                    showTagSheet.toggle()
+                }
+
+                Button("Delete", systemImage: "trash", role: .destructive) {
+                    try? coreDataStack.delete(tag, in: moc)
+                    checkTagsCount()
+                }
+            }
+    }
+}
+
+extension TaskPlanScreen {
+    private func checkTagsCount() {
+        showNewTagButton = tagList.count < 8
+    }
+
+    private func toggleTagSelection(_ tag: Tag) {
+        if !tags.insert(tag).inserted {
+            tags.remove(tag)
+        }
+    }
+
+    private func isSelectedTag(_ tag: Tag) -> Bool {
+        tags.contains(tag)
     }
 }
 
 #Preview {
     NavigationStack {
         TaskPlanScreen()
+            .previewEnvironment()
     }
 }
