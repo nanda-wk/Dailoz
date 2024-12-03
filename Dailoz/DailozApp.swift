@@ -10,6 +10,8 @@ import SwiftUI
 @main
 struct DailozApp: App {
     private let coreDataStack = CoreDataStack.shared
+    @StateObject private var taskRepository = TaskRepository()
+    @StateObject private var tagRepository = TagRepository()
 
     init() {
         UITabBar.appearance().standardAppearance.configureWithTransparentBackground()
@@ -25,6 +27,8 @@ struct DailozApp: App {
         WindowGroup {
             TabScreen()
                 .environment(\.managedObjectContext, coreDataStack.viewContext)
+                .environmentObject(taskRepository)
+                .environmentObject(tagRepository)
         }
     }
 }

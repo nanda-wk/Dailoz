@@ -19,7 +19,7 @@ struct TabScreen: View {
         }
         .fullScreenCover(isPresented: $showTaskPlanScreen) {
             NavigationStack {
-                TaskPlanScreen()
+                TaskPlanScreen(task: .constant(nil))
             }
         }
     }

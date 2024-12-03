@@ -7,6 +7,7 @@
 
 import CoreData
 import Foundation
+import SwiftUICore
 
 final class DTask: NSManagedObject, Identifiable {
     @NSManaged var title: String
@@ -40,6 +41,19 @@ final class DTask: NSManagedObject, Identifiable {
         return "\(start)-\(end)"
     }
 
+    var color: Color {
+        switch statusEnum {
+        case .completed:
+            .completedBG
+        case .pending:
+            .pendingBG
+        case .canceled:
+            .canceledBG
+        case .onGoing:
+            .ongoingBG
+        }
+    }
+
     override func awakeFromInsert() {
         super.awakeFromInsert()
 
@@ -52,12 +66,46 @@ final class DTask: NSManagedObject, Identifiable {
 }
 
 extension DTask {
+    static var taskFetchRequest: NSFetchRequest<DTask> {
+        NSFetchRequest(entityName: "DTask")
+    }
+
+    static func all() -> NSFetchRequest<DTask> {
+        let request: NSFetchRequest<DTask> = taskFetchRequest
+        request.sortDescriptors = [
+            NSSortDescriptor(keyPath: \DTask.date, ascending: false),
+        ]
+        return request
+    }
+
+    static func fetchTasksForToday() -> NSFetchRequest<DTask> {
+        let request = taskFetchRequest
+        let calendar = Calendar.current
+        let startOfToday = calendar.startOfDay(for: Date())
+        let endOfToday = calendar.date(byAdding: .day, value: 1, to: startOfToday)!
+        request.predicate = NSPredicate(format: "date >= %@ AND date < %@", startOfToday as NSDate, endOfToday as NSDate)
+        request.sortDescriptors = [
+            NSSortDescriptor(keyPath: \DTask.date, ascending: false),
+        ]
+        return request
+    }
+}
+
+extension DTask {
     static func preview(count: Int, in context: NSManagedObjectContext = CoreDataStack.shared.viewContext) {
         var tasks: [DTask] = []
+        let tag1 = Tag(context: context)
+        tag1.name = "Home"
+        tag1.color = "#11b9ac"
+        let tag2 = Tag(context: context)
+        tag2.name = "Office"
+        tag2.color = "#ec0661"
+
         for _ in 0 ..< count {
             let task = DTask(context: context)
             task.title = "Task \(tasks.count + 1)"
             task.tDescription = "Description \(tasks.count + 1)"
+            task.tags = [tag1, tag2]
             tasks.append(task)
         }
         try? context.save()

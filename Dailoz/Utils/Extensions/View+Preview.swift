@@ -11,7 +11,9 @@ import SwiftUI
 extension View {
     func previewEnvironment() -> some View {
         DTask.preview(count: 7)
-        Tag.preview(count: 7)
+        Tag.preview(count: 5)
         return environment(\.managedObjectContext, CoreDataStack.shared.viewContext)
+            .environmentObject(TaskRepository())
+            .environmentObject(TagRepository())
     }
 }

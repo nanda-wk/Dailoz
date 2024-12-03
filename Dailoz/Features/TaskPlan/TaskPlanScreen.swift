@@ -10,7 +10,11 @@ import SwiftUI
 struct TaskPlanScreen: View {
     @Environment(\.managedObjectContext) var moc
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject private var taskRepository: TaskRepository
+    @EnvironmentObject private var tagRepository: TagRepository
     @FetchRequest(fetchRequest: Tag.all()) private var tagList
+
+    @Binding var task: DTask?
 
     @State private var title = ""
     @State private var date = Date()
@@ -22,6 +26,8 @@ struct TaskPlanScreen: View {
 
     // MARK: - View UI State
 
+    @State private var navTitle = "Add Task"
+    @State private var btnText = "Create"
     @State private var isValid = false
     @State private var showDatePicker = false
     @State private var showStartTimePicker = false
@@ -30,6 +36,7 @@ struct TaskPlanScreen: View {
     @State private var showTagSheet = false
     @State private var showNewTagButton = true
 
+    @State private var taskToSave: DTask!
     @State private var tagToUpdate: Tag?
 
     private let coreDataStack = CoreDataStack.shared
@@ -54,8 +61,11 @@ struct TaskPlanScreen: View {
 
                 Spacer()
 
-                Button {} label: {
-                    AppButton(title: "Create", isDisabled: !isValid)
+                Button {
+                    saveTask()
+                    dismiss()
+                } label: {
+                    AppButton(title: btnText, isDisabled: !isValid)
                 }
                 .disabled(!isValid)
             }
@@ -72,9 +82,10 @@ struct TaskPlanScreen: View {
                 }
             }
         }
-        .navigationTitle("Add Task")
+        .navigationTitle(navTitle)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
+            setupBinding()
             checkTagsCount()
         }
     }
@@ -257,7 +268,7 @@ extension TaskPlanScreen {
                 }
 
                 Button("Delete", systemImage: "trash", role: .destructive) {
-                    try? coreDataStack.delete(tag, in: moc)
+                    tagRepository.delete(tag)
                     checkTagsCount()
                 }
             }
@@ -265,6 +276,21 @@ extension TaskPlanScreen {
 }
 
 extension TaskPlanScreen {
+    private func setupBinding() {
+        if let task {
+            navTitle = "Update Task"
+            btnText = "Update"
+
+            title = task.title
+            date = task.date
+            startTime = task.startTime
+            endTime = task.endTime
+            description = task.tDescription
+            type = task.typeEnum
+            tags = task.tags
+        }
+    }
+
     private func checkTagsCount() {
         showNewTagButton = tagList.count < 8
     }
@@ -278,11 +304,23 @@ extension TaskPlanScreen {
     private func isSelectedTag(_ tag: Tag) -> Bool {
         tags.contains(tag)
     }
+
+    private func saveTask() {
+        taskToSave = task ?? DTask(context: moc)
+        taskToSave.title = title
+        taskToSave.date = date
+        taskToSave.startTime = startTime
+        taskToSave.endTime = endTime
+        taskToSave.tDescription = description
+        taskToSave.type = type.rawValue
+        taskToSave.tags = tags
+        taskRepository.save(taskToSave)
+    }
 }
 
 #Preview {
     NavigationStack {
-        TaskPlanScreen()
+        TaskPlanScreen(task: .constant(nil))
             .previewEnvironment()
     }
 }

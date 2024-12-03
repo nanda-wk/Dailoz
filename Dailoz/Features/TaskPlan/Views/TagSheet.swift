@@ -10,6 +10,7 @@ import SwiftUI
 struct TagSheet: View {
     @Environment(\.managedObjectContext) var moc
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject private var tagRepository: TagRepository
 
     @Binding var tag: Tag?
 
@@ -17,7 +18,7 @@ struct TagSheet: View {
     @State private var color = Color(.royalBlue)
     @State private var tagToSave: Tag!
 
-    @State private var title = "Add Tag"
+    @State private var navTitle = "Add Tag"
     @State private var btnText = "Save"
     @State private var isDisable = true
 
@@ -51,7 +52,7 @@ struct TagSheet: View {
                 Spacer()
             }
             .padding()
-            .navigationTitle(title)
+            .navigationTitle(navTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -72,7 +73,7 @@ struct TagSheet: View {
             }
             .onAppear {
                 if let tag {
-                    title = "Edit Tag"
+                    navTitle = "Edit Tag"
                     btnText = "Update"
                     name = tag.name
                     color = Color(hex: tag.color)
@@ -86,7 +87,7 @@ struct TagSheet: View {
         tagToSave.name = name
         tagToSave.color = color.hexString
 
-        try? moc.save()
+        tagRepository.save(tagToSave)
     }
 }
 
