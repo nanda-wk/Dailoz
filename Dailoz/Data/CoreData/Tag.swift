@@ -7,6 +7,7 @@
 
 import CoreData
 import Foundation
+import SwiftUI
 
 final class Tag: NSManagedObject, Identifiable {
     @NSManaged var name: String

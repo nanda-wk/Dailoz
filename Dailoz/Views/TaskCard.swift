@@ -14,39 +14,46 @@ struct TaskCard: View {
     @State private var taskToEdit: DTask?
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            RoundedRectangle(cornerRadius: 18)
-                .fill(task.bgColor)
+        if let _ = task.managedObjectContext {
+            ZStack(alignment: .topLeading) {
+                RoundedRectangle(cornerRadius: 18)
+                    .fill(task.bgColor)
 
-            VStack(alignment: .leading, spacing: 20) {
-                HStack {
-                    RoundedRectangle(cornerRadius: 10)
-                        .frame(width: 3)
-                        .foregroundStyle(task.color)
-                        .padding(.trailing)
+                VStack(alignment: .leading, spacing: 20) {
+                    HStack {
+                        HeaderSection()
 
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text(task.title)
-                            .font(.robotoM(18))
-                            .foregroundStyle(.textPrimary)
+                        Spacer()
 
-                        Text(task.timeRange)
-                            .font(.robotoR(16))
-                            .foregroundStyle(.textSecondary)
+                        MenuButton()
+                            .rotationEffect(.degrees(90))
+                            .offset(y: -14)
                     }
 
-                    Spacer()
-
-                    MenuButton()
-                        .rotationEffect(.degrees(90))
-                        .offset(y: -14)
+                    TagSection()
                 }
-
-                TagSection()
+                .padding()
             }
-            .padding()
+            .frame(height: 120)
         }
-        .frame(height: 120)
+    }
+
+    @ViewBuilder
+    private func HeaderSection() -> some View {
+        RoundedRectangle(cornerRadius: 10)
+            .frame(width: 3)
+            .foregroundStyle(task.color)
+            .padding(.trailing)
+
+        VStack(alignment: .leading, spacing: 10) {
+            Text(task.title)
+                .font(.robotoM(18))
+                .foregroundStyle(.textPrimary)
+
+            Text(task.timeRange)
+                .font(.robotoR(16))
+                .foregroundStyle(.textSecondary)
+        }
     }
 
     private func TagSection() -> some View {
@@ -87,6 +94,7 @@ struct TaskCard: View {
 
             Button("Delete", systemImage: "trash", role: .destructive) {
                 taskRepository.delete(task)
+                taskRepository.fetchTaskGrooupData()
             }
         } label: {
             Image(systemName: "ellipsis")

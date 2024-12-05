@@ -11,6 +11,7 @@ import Foundation
 final class TaskRepository: ObservableObject {
     @Published var tasks: [DTask] = []
     @Published var todayTasks: [DTask] = []
+    @Published var taskGroups: [TStatus: Int] = [:]
 
     private let stack = CoreDataStack.shared
     private lazy var moc = stack.viewContext
@@ -30,6 +31,23 @@ final class TaskRepository: ObservableObject {
             todayTasks = try moc.fetch(request)
         } catch {
             print("Failed to fetch tasks for today: \(error)")
+        }
+    }
+
+    func fetchTaskGrooupData() {
+        let request = DTask.fetchTaskCountGroupedByStatus()
+        do {
+            let fetchedResults = try moc.fetch(request) as? [[String: Any]]
+            fetchedResults?.forEach { dictionary in
+                if let statusString = dictionary["status"] as? String,
+                   let status = TStatus(rawValue: statusString),
+                   let count = dictionary["count"] as? Int
+                {
+                    self.taskGroups[status] = count
+                }
+            }
+        } catch {
+            print("Failed to fetch task count grouped by status: \(error)")
         }
     }
 

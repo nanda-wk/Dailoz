@@ -66,6 +66,7 @@ struct TaskPlanScreen: View {
                 Button {
                     saveTask()
                     dismiss()
+                    taskRepository.fetchTaskGrooupData()
                     refreshManager.triggerRefresh()
                 } label: {
                     AppButton(title: btnText, isDisabled: !isValid)

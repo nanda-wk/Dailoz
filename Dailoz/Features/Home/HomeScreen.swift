@@ -9,26 +9,149 @@ import SwiftUI
 
 struct HomeScreen: View {
     @EnvironmentObject private var refreshManager: RefreshManager
-    @FetchRequest(fetchRequest: DTask.all()) var tasks
+    @EnvironmentObject private var taskRepository: TaskRepository
+    @FetchRequest(fetchRequest: DTask.fetchTasksForToday()) var tasks
 
     @State private var taskToEdit: DTask?
 
     var body: some View {
         ScrollView {
-            LazyVStack {
-                ForEach(tasks) { task in
-                    TaskCard(task: task)
-                }
+            VStack(spacing: 36) {
+                NavBarSection()
+
+                HeroSection()
+
+                TodayTaskSection()
             }
             .padding()
         }
         .id(refreshManager.refreshId)
-        .navigationTitle("Home Screen")
-//        .fullScreenCover(item: $taskToEdit)  { in
-//            NavigationStack {
-//                TaskPlanScreen(task: $taskToEdit)
-//            }
-//        }
+        .onAppear {
+            taskRepository.fetchTaskGrooupData()
+        }
+    }
+
+    private func NavBarSection() -> some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Hi, Nanda")
+                    .font(.robotoB(30))
+                    .foregroundStyle(.textPrimary)
+
+                Text("Let’s make this day productive")
+                    .font(.robotoR(16))
+                    .foregroundStyle(.gray)
+            }
+
+            Spacer()
+
+            Button {} label: {
+                Image(.avatarDummy)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 50, height: 50)
+                    .clipShape(Circle())
+            }
+        }
+    }
+
+    private func HeroSection() -> some View {
+        VStack(alignment: .leading) {
+            Text("My Task")
+                .font(.robotoB(26))
+                .foregroundStyle(.textPrimary)
+
+            HStack(spacing: 20) {
+                VStack(spacing: 20) {
+                    Button {} label: {
+                        HeroCard(count: taskRepository.taskGroups[.completed] ?? 0, icon: Image(.iMac), title: "Completed", background: .completed)
+                    }
+
+                    Button {} label: {
+                        HeroCard(count: taskRepository.taskGroups[.canceled] ?? 0, icon: Image(systemName: "xmark.square"), title: "Canceled", background: .canceled, foreground: .white, isSmallIcon: true)
+                    }
+                }
+
+                VStack(spacing: 20) {
+                    Button {} label: {
+                        HeroCard(count: taskRepository.taskGroups[.pending] ?? 0, icon: Image(systemName: "clock"), title: "Pending", background: .pending, foreground: .white, isSmallIcon: true)
+                    }
+
+                    Button {} label: {
+                        HeroCard(count: taskRepository.taskGroups[.onGoing] ?? 0, icon: Image(.folder), title: "On Going", background: .ongoing)
+                    }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func HeroCard(
+        count: Int,
+        icon: Image,
+        title: String,
+        background: Color,
+        foreground: Color = .black,
+        isSmallIcon: Bool = false
+    ) -> some View {
+        let iconSize: CGFloat = isSmallIcon ? 40 : 90
+        ZStack(alignment: .topTrailing) {
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(
+                        LinearGradient(colors: [background], startPoint: .bottomLeading, endPoint: .topTrailing)
+                    )
+                    .shadow(color: background.opacity(0.4), radius: 10, x: 0, y: 5)
+
+                VStack(alignment: .leading, spacing: 10) {
+                    icon
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: iconSize, height: iconSize)
+
+                    if isSmallIcon {
+                        Spacer()
+                            .frame(height: 6)
+                    }
+
+                    Text(title)
+                        .font(.robotoM(18))
+
+                    Text("^[\(count) Task](inflect: true)")
+                        .font(.robotoR(16))
+                }
+                .padding()
+            }
+
+            Image(systemName: "arrow.forward")
+                .padding()
+        }
+        .foregroundStyle(foreground)
+    }
+
+    private func TodayTaskSection() -> some View {
+        LazyVStack(spacing: 16) {
+            HStack {
+                Text("Today Task")
+                    .font(.robotoB(26))
+                    .foregroundStyle(.textPrimary)
+
+                Spacer()
+
+                Button {} label: {
+                    Text("View all")
+                        .font(.robotoR(14))
+                        .foregroundStyle(.textSecondary)
+                }
+            }
+
+            Spacer()
+                .frame(height: 10)
+
+            ForEach(tasks) { task in
+                TaskCard(task: task)
+            }
+        }
     }
 }
 

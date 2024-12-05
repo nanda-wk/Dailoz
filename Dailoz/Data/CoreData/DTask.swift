@@ -100,6 +100,22 @@ extension DTask {
         request.sortDescriptors = [
             NSSortDescriptor(keyPath: \DTask.date, ascending: false),
         ]
+//        request.returnsObjectsAsFaults = false
+        return request
+    }
+
+    static func fetchTaskCountGroupedByStatus() -> NSFetchRequest<NSFetchRequestResult> {
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "DTask")
+        request.resultType = .dictionaryResultType
+
+        let countExpression = NSExpressionDescription()
+        countExpression.name = "count"
+        countExpression.expression = NSExpression(forFunction: "count:", arguments: [NSExpression(forKeyPath: "status")])
+        countExpression.expressionResultType = .integer32AttributeType
+
+        request.propertiesToGroupBy = ["status"]
+        request.propertiesToFetch = ["status", countExpression]
+
         return request
     }
 }
