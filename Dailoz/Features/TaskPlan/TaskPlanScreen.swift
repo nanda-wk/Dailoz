@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct TaskPlanScreen: View {
-    @Environment(\.managedObjectContext) var moc
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.managedObjectContext) private var moc
+    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var taskRepository: TaskRepository
     @EnvironmentObject private var tagRepository: TagRepository
+    @EnvironmentObject private var refreshManager: RefreshManager
     @FetchRequest(fetchRequest: Tag.all()) private var tagList
 
     @Binding var task: DTask?
@@ -38,6 +39,7 @@ struct TaskPlanScreen: View {
 
     @State private var taskToSave: DTask!
     @State private var tagToUpdate: Tag?
+    @State private var isRefreshed = false
 
     private let coreDataStack = CoreDataStack.shared
 
@@ -64,6 +66,7 @@ struct TaskPlanScreen: View {
                 Button {
                     saveTask()
                     dismiss()
+                    refreshManager.triggerRefresh()
                 } label: {
                     AppButton(title: btnText, isDisabled: !isValid)
                 }
@@ -75,6 +78,9 @@ struct TaskPlanScreen: View {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     dismiss()
+                    if isRefreshed {
+                        refreshManager.triggerRefresh()
+                    }
                 } label: {
                     Image(systemName: "xmark")
                         .font(.title3.bold())
@@ -164,6 +170,7 @@ extension TaskPlanScreen {
                     DatePicker("", selection: $startTime, displayedComponents: .hourAndMinute)
                         .datePickerStyle(.wheel)
                         .labelsHidden()
+                        .tint(.royalBlue)
                         .padding()
                         .presentationDetents([.medium])
                         .presentationDragIndicator(.visible)
@@ -186,6 +193,7 @@ extension TaskPlanScreen {
                     DatePicker("", selection: $endTime, displayedComponents: .hourAndMinute)
                         .datePickerStyle(.wheel)
                         .labelsHidden()
+                        .tint(.royalBlue)
                         .padding()
                         .presentationDetents([.medium])
                         .presentationDragIndicator(.visible)
@@ -223,6 +231,18 @@ extension TaskPlanScreen {
                         .onTapGesture {
                             toggleTagSelection(tag)
                         }
+                        .contextMenu {
+                            Button("Edit", systemImage: "pencil") {
+                                tagToUpdate = tag
+                                showTagSheet.toggle()
+                            }
+
+                            Button("Delete", systemImage: "trash", role: .destructive) {
+                                tagRepository.delete(tag)
+                                checkTagsCount()
+                                isRefreshed = true
+                            }
+                        }
                 }
             }
 
@@ -242,7 +262,7 @@ extension TaskPlanScreen {
         .sheet(isPresented: $showTagSheet) {
             checkTagsCount()
         } content: {
-            TagSheet(tag: $tagToUpdate)
+            TagSheet(tag: $tagToUpdate, isRefreshed: $isRefreshed)
                 .presentationDetents([.fraction(0.4)])
         }
     }
@@ -261,17 +281,6 @@ extension TaskPlanScreen {
                 Capsule()
                     .fill(Color(hex: tag.color).opacity(isSelected ? 1 : 0.2))
             )
-            .contextMenu {
-                Button("Edit", systemImage: "pencil") {
-                    tagToUpdate = tag
-                    showTagSheet.toggle()
-                }
-
-                Button("Delete", systemImage: "trash", role: .destructive) {
-                    tagRepository.delete(tag)
-                    checkTagsCount()
-                }
-            }
     }
 }
 
@@ -313,7 +322,7 @@ extension TaskPlanScreen {
         taskToSave.endTime = endTime
         taskToSave.tDescription = description
         taskToSave.type = type.rawValue
-        taskToSave.tags = tags
+        taskToSave.tags = tags.filter { moc.registeredObject(for: $0.objectID) != nil }
         taskRepository.save(taskToSave)
     }
 }

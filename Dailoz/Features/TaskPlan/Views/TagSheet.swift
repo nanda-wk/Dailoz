@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct TagSheet: View {
-    @Environment(\.managedObjectContext) var moc
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.managedObjectContext) private var moc
+    @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var tagRepository: TagRepository
 
     @Binding var tag: Tag?
+    @Binding var isRefreshed: Bool
 
     @State private var name = ""
     @State private var color = Color(.royalBlue)
@@ -65,6 +66,7 @@ struct TagSheet: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(btnText) {
                         saveTag()
+                        isRefreshed = true
                         dismiss()
                     }
                     .tint(.royalBlue)
@@ -93,6 +95,6 @@ struct TagSheet: View {
 
 #Preview {
     NavigationStack {
-        TagSheet(tag: .constant(nil))
+        TagSheet(tag: .constant(nil), isRefreshed: .constant(false))
     }
 }

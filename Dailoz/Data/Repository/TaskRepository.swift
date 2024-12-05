@@ -41,4 +41,13 @@ final class TaskRepository: ObservableObject {
             print("Failed to save task: \(error)")
         }
     }
+
+    func delete(_ task: DTask) {
+        let context = task.managedObjectContext ?? moc
+        do {
+            try stack.delete(task, in: context)
+        } catch {
+            print("Failed to delete task: \(error)")
+        }
+    }
 }

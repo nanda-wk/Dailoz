@@ -15,5 +15,6 @@ extension View {
         return environment(\.managedObjectContext, CoreDataStack.shared.viewContext)
             .environmentObject(TaskRepository())
             .environmentObject(TagRepository())
+            .environmentObject(RefreshManager())
     }
 }

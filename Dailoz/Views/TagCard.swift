@@ -8,18 +8,21 @@
 import SwiftUI
 
 struct TagCard: View {
-    let name: String
+    let tag: Tag
+    private var color: Color {
+        Color(hex: tag.color)
+    }
 
     var body: some View {
-        Text(name)
+        Text(tag.name)
             .font(.robotoM(12))
-            .foregroundStyle(.royalBlue)
+            .foregroundStyle(color)
             .padding(.horizontal, 8)
             .padding(.vertical, 6)
-            .background(.royalBlue.opacity(0.5), in: RoundedRectangle(cornerRadius: 5))
+            .background(color.opacity(0.3), in: RoundedRectangle(cornerRadius: 5))
     }
 }
 
 #Preview {
-    TagCard(name: "Hello")
+    TagCard(tag: Tag.previewTags()[0])
 }

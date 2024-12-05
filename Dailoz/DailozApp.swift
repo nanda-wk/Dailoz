@@ -12,6 +12,7 @@ struct DailozApp: App {
     private let coreDataStack = CoreDataStack.shared
     @StateObject private var taskRepository = TaskRepository()
     @StateObject private var tagRepository = TagRepository()
+    @StateObject private var refreshManager = RefreshManager()
 
     init() {
         UITabBar.appearance().standardAppearance.configureWithTransparentBackground()
@@ -29,6 +30,7 @@ struct DailozApp: App {
                 .environment(\.managedObjectContext, coreDataStack.viewContext)
                 .environmentObject(taskRepository)
                 .environmentObject(tagRepository)
+                .environmentObject(refreshManager)
         }
     }
 }

@@ -71,4 +71,15 @@ extension Tag {
         }
         try? context.save()
     }
+
+    static func previewTags() -> [Tag] {
+        let context = CoreDataStack.shared.viewContext
+        let tag1 = Tag(context: context)
+        tag1.name = "Home"
+        tag1.color = "8F99EB"
+        let tag2 = Tag(context: context)
+        tag2.name = "Office"
+        tag2.color = "7EC8E7"
+        return [tag1, tag2]
+    }
 }

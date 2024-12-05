@@ -168,4 +168,5 @@ enum TabItem: String, Identifiable {
 
 #Preview {
     TabScreen()
+        .previewEnvironment()
 }

@@ -8,46 +8,27 @@
 import SwiftUI
 
 struct HomeScreen: View {
-    @FetchRequest(fetchRequest: DTask.fetchTasksForToday()) var tasks
-
-    @State private var showTaskPlanScreen = false
+    @EnvironmentObject private var refreshManager: RefreshManager
+    @FetchRequest(fetchRequest: DTask.all()) var tasks
 
     @State private var taskToEdit: DTask?
 
     var body: some View {
-        List {
-            ForEach(tasks) { task in
-                Button {
-                    taskToEdit = task
-                    showTaskPlanScreen.toggle()
-                } label: {
-                    VStack(alignment: .leading) {
-                        Text(task.title)
-                            .padding(10)
-                            .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(task.color)
-                            )
-
-                        LazyHStack {
-                            ForEach(Array(task.tags)) { tag in
-                                Text(tag.name)
-                                    .foregroundStyle(Color(hex: tag.color))
-                            }
-                        }
-                    }
+        ScrollView {
+            LazyVStack {
+                ForEach(tasks) { task in
+                    TaskCard(task: task)
                 }
-                .buttonStyle(.plain)
             }
+            .padding()
         }
+        .id(refreshManager.refreshId)
         .navigationTitle("Home Screen")
-        .fullScreenCover(isPresented: $showTaskPlanScreen) {
-            taskToEdit = nil
-        } content: {
-            NavigationStack {
-                TaskPlanScreen(task: $taskToEdit)
-            }
-        }
+//        .fullScreenCover(item: $taskToEdit)  { in
+//            NavigationStack {
+//                TaskPlanScreen(task: $taskToEdit)
+//            }
+//        }
     }
 }
 

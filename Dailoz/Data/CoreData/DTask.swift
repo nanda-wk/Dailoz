@@ -38,10 +38,23 @@ final class DTask: NSManagedObject, Identifiable {
     var timeRange: String {
         let start = startTime.format(.hhmm)
         let end = endTime.format(.hhmm)
-        return "\(start)-\(end)"
+        return "\(start) - \(end)"
     }
 
     var color: Color {
+        switch statusEnum {
+        case .completed:
+            .completed
+        case .pending:
+            .pending
+        case .canceled:
+            .canceled
+        case .onGoing:
+            .ongoing
+        }
+    }
+
+    var bgColor: Color {
         switch statusEnum {
         case .completed:
             .completedBG
@@ -109,5 +122,21 @@ extension DTask {
             tasks.append(task)
         }
         try? context.save()
+    }
+
+    static func oneTask() -> DTask {
+        let context = CoreDataStack.shared.viewContext
+        let tag1 = Tag(context: context)
+        tag1.name = "Home"
+        tag1.color = "#11b9ac"
+        let tag2 = Tag(context: context)
+        tag2.name = "Office"
+        tag2.color = "#ec0661"
+
+        let task = DTask(context: context)
+        task.title = "Cleaning Clothes"
+        task.tDescription = "Clean clothes in the closet."
+        task.tags = [tag1, tag2]
+        return task
     }
 }
