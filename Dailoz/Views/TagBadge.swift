@@ -1,5 +1,5 @@
 //
-//  TagCard.swift
+//  TagBadge.swift
 //  Dailoz
 //
 //  Created by Nanda WK on 2024-12-01.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct TagCard: View {
+struct TagBadge: View {
     let tag: Tag
     private var color: Color {
         Color(hex: tag.color)
@@ -24,5 +24,5 @@ struct TagCard: View {
 }
 
 #Preview {
-    TagCard(tag: Tag.previewTags()[0])
+    TagBadge(tag: Tag.previewTags()[0])
 }

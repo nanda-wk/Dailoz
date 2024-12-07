@@ -12,6 +12,8 @@ struct HomeScreen: View {
     @EnvironmentObject private var taskRepository: TaskRepository
     @FetchRequest(fetchRequest: DTask.fetchTasksForToday()) var tasks
 
+    @State private var taskListIsEmpty = false
+
     @State private var taskToEdit: DTask?
 
     var body: some View {
@@ -26,8 +28,14 @@ struct HomeScreen: View {
             .padding()
         }
         .id(refreshManager.refreshId)
+        .scrollIndicators(.hidden)
+        .safeAreaInset(edge: .bottom) {
+            Spacer()
+                .frame(height: 40)
+        }
         .onAppear {
-            taskRepository.fetchTaskGrooupData()
+            taskRepository.fetchTaskCount()
+            taskListIsEmpty = tasks.isEmpty
         }
     }
 
@@ -63,22 +71,30 @@ struct HomeScreen: View {
 
             HStack(spacing: 20) {
                 VStack(spacing: 20) {
-                    Button {} label: {
-                        HeroCard(count: taskRepository.taskGroups[.completed] ?? 0, icon: Image(.iMac), title: "Completed", background: .completed)
+                    NavigationLink {
+                        TaskOverviewScreen(status: .completed)
+                    } label: {
+                        HeroCard(count: taskRepository.taskCountWithStatus[.completed] ?? 0, icon: Image(.iMac), title: "Completed", background: .completed)
                     }
 
-                    Button {} label: {
-                        HeroCard(count: taskRepository.taskGroups[.canceled] ?? 0, icon: Image(systemName: "xmark.square"), title: "Canceled", background: .canceled, foreground: .white, isSmallIcon: true)
+                    NavigationLink {
+                        TaskOverviewScreen(status: .canceled)
+                    } label: {
+                        HeroCard(count: taskRepository.taskCountWithStatus[.canceled] ?? 0, icon: Image(systemName: "xmark.square"), title: "Canceled", background: .canceled, foreground: .white, isSmallIcon: true)
                     }
                 }
 
                 VStack(spacing: 20) {
-                    Button {} label: {
-                        HeroCard(count: taskRepository.taskGroups[.pending] ?? 0, icon: Image(systemName: "clock"), title: "Pending", background: .pending, foreground: .white, isSmallIcon: true)
+                    NavigationLink {
+                        TaskOverviewScreen(status: .pending)
+                    } label: {
+                        HeroCard(count: taskRepository.taskCountWithStatus[.pending] ?? 0, icon: Image(systemName: "clock"), title: "Pending", background: .pending, foreground: .white, isSmallIcon: true)
                     }
 
-                    Button {} label: {
-                        HeroCard(count: taskRepository.taskGroups[.onGoing] ?? 0, icon: Image(.folder), title: "On Going", background: .ongoing)
+                    NavigationLink {
+                        TaskOverviewScreen(status: .onGoing)
+                    } label: {
+                        HeroCard(count: taskRepository.taskCountWithStatus[.onGoing] ?? 0, icon: Image(.folder), title: "On Going", background: .ongoing)
                     }
                 }
             }
@@ -129,6 +145,7 @@ struct HomeScreen: View {
         .foregroundStyle(foreground)
     }
 
+    @ViewBuilder
     private func TodayTaskSection() -> some View {
         LazyVStack(spacing: 16) {
             HStack {
@@ -138,18 +155,25 @@ struct HomeScreen: View {
 
                 Spacer()
 
-                Button {} label: {
-                    Text("View all")
-                        .font(.robotoR(14))
-                        .foregroundStyle(.textSecondary)
+                if !taskListIsEmpty {
+                    NavigationLink {} label: {
+                        Text("View all")
+                            .font(.robotoR(14))
+                            .foregroundStyle(.textSecondary)
+                    }
                 }
             }
 
             Spacer()
                 .frame(height: 10)
 
-            ForEach(tasks) { task in
-                TaskCard(task: task)
+            if !taskListIsEmpty {
+                ForEach(tasks) { task in
+                    TaskCard(task: task)
+                }
+            } else {
+                ContentUnavailableView("No tasks scheduled for today.", systemImage: "text.page.badge.magnifyingglass")
+                    .foregroundStyle(.textPrimary)
             }
         }
     }
@@ -158,6 +182,6 @@ struct HomeScreen: View {
 #Preview {
     NavigationStack {
         HomeScreen()
-            .previewEnvironment()
+            .previewEnvironment(taskCount: 0)
     }
 }

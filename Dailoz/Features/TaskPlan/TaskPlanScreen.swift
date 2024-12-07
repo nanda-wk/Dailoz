@@ -66,7 +66,7 @@ struct TaskPlanScreen: View {
                 Button {
                     saveTask()
                     dismiss()
-                    taskRepository.fetchTaskGrooupData()
+                    taskRepository.fetchTaskCount()
                     refreshManager.triggerRefresh()
                 } label: {
                     AppButton(title: btnText, isDisabled: !isValid)
@@ -228,7 +228,7 @@ extension TaskPlanScreen {
 
             LazyVGrid(columns: columns) {
                 ForEach(tagList) { tag in
-                    TagCapsule(tag)
+                    ChipView(name: tag.name, color: Color(hex: tag.color), isSelected: isSelectedTag(tag))
                         .onTapGesture {
                             toggleTagSelection(tag)
                         }
@@ -266,22 +266,6 @@ extension TaskPlanScreen {
             TagSheet(tag: $tagToUpdate, isRefreshed: $isRefreshed)
                 .presentationDetents([.fraction(0.4)])
         }
-    }
-
-    @ViewBuilder
-    private func TagCapsule(_ tag: Tag) -> some View {
-        let isSelected = isSelectedTag(tag)
-        Text(tag.name)
-            .font(.robotoR(16))
-            .foregroundStyle(isSelected ? .white : Color(hex: tag.color))
-            .lineLimit(1)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .frame(maxWidth: .infinity)
-            .background(
-                Capsule()
-                    .fill(Color(hex: tag.color).opacity(isSelected ? 1 : 0.2))
-            )
     }
 }
 

@@ -9,9 +9,9 @@ import SwiftUI
 
 @MainActor
 extension View {
-    func previewEnvironment() -> some View {
-        DTask.preview(count: 7)
-        Tag.preview(count: 5)
+    func previewEnvironment(taskCount: Int = 7, tagCount: Int = 5) -> some View {
+        DTask.preview(count: taskCount)
+        Tag.preview(count: tagCount)
         return environment(\.managedObjectContext, CoreDataStack.shared.viewContext)
             .environmentObject(TaskRepository())
             .environmentObject(TagRepository())

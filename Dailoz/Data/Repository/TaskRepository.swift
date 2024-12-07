@@ -11,7 +11,9 @@ import Foundation
 final class TaskRepository: ObservableObject {
     @Published var tasks: [DTask] = []
     @Published var todayTasks: [DTask] = []
-    @Published var taskGroups: [TStatus: Int] = [:]
+    @Published var taskCountWithStatus: [TStatus: Int] = [:]
+    @Published var groupTasks: [String: [DTask]] = [:]
+    @Published var isFetching = false
 
     private let stack = CoreDataStack.shared
     private lazy var moc = stack.viewContext
@@ -26,15 +28,20 @@ final class TaskRepository: ObservableObject {
     }
 
     func fetchTaskForToday() {
+        guard !isFetching else { return }
+        isFetching = true
         let request = DTask.fetchTasksForToday()
         do {
             todayTasks = try moc.fetch(request)
         } catch {
             print("Failed to fetch tasks for today: \(error)")
         }
+        isFetching = false
     }
 
-    func fetchTaskGrooupData() {
+    func fetchTaskCount() {
+        guard !isFetching else { return }
+        isFetching = true
         let request = DTask.fetchTaskCountGroupedByStatus()
         do {
             let fetchedResults = try moc.fetch(request) as? [[String: Any]]
@@ -43,12 +50,29 @@ final class TaskRepository: ObservableObject {
                    let status = TStatus(rawValue: statusString),
                    let count = dictionary["count"] as? Int
                 {
-                    self.taskGroups[status] = count
+                    self.taskCountWithStatus[status] = count
                 }
             }
         } catch {
             print("Failed to fetch task count grouped by status: \(error)")
         }
+        isFetching = false
+    }
+
+    func fetchGroupedTaskByDate(with searchFilter: SearchFilter) {
+        guard !isFetching else { return }
+        isFetching = true
+        let request = DTask.fetchTasks(with: searchFilter)
+        do {
+            let fetchedResults = try moc.fetch(request)
+            let groupedTasks = Dictionary(grouping: fetchedResults) { task -> String in
+                task.date.format(.dMMMMyyyy)
+            }
+            groupTasks = groupedTasks
+        } catch {
+            print("Failed to fetch grouped tasks: \(error)")
+        }
+        isFetching = false
     }
 
     func save(_ task: DTask) {

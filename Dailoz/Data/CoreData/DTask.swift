@@ -100,7 +100,7 @@ extension DTask {
         request.sortDescriptors = [
             NSSortDescriptor(keyPath: \DTask.date, ascending: false),
         ]
-//        request.returnsObjectsAsFaults = false
+        request.fetchLimit = 5
         return request
     }
 
@@ -115,6 +115,47 @@ extension DTask {
 
         request.propertiesToGroupBy = ["status"]
         request.propertiesToFetch = ["status", countExpression]
+
+        return request
+    }
+
+    static func fetchTasks(with filter: SearchFilter, batchSize: Int = 20, offset: Int = 0) -> NSFetchRequest<DTask> {
+        let request = taskFetchRequest
+        var predicates: [NSPredicate] = []
+
+        if !filter.searchText.isEmpty {
+            let searchPredicate = NSPredicate(format: "title CONTAINS[cd] %@ OR tDescription CONTAINS[cd] %@", filter.searchText, filter.searchText)
+            predicates.append(searchPredicate)
+        }
+
+        if !filter.sortByTags.isEmpty {
+            let tagsPredicate = NSPredicate(format: "ANY tags IN %@", filter.sortByTags)
+            predicates.append(tagsPredicate)
+        }
+
+        if !filter.sortByType.isEmpty {
+            let typesPredicate = NSPredicate(format: "type IN %@", filter.sortByType.map(\.rawValue))
+            predicates.append(typesPredicate)
+        }
+
+        if let status = filter.status {
+            let statusPredicate = NSPredicate(format: "status == %@", status.rawValue)
+            predicates.append(statusPredicate)
+        }
+
+        if !predicates.isEmpty {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        }
+
+        if filter.sortByDate == .newest {
+            request.sortDescriptors = [NSSortDescriptor(keyPath: \DTask.date, ascending: false)]
+        } else {
+            request.sortDescriptors = [NSSortDescriptor(keyPath: \DTask.date, ascending: true)]
+        }
+
+        request.fetchBatchSize = batchSize
+        request.fetchOffset = offset
+        request.fetchLimit = batchSize
 
         return request
     }

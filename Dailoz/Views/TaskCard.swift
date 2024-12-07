@@ -64,7 +64,7 @@ struct TaskCard: View {
 
             LazyHStack(spacing: 8) {
                 ForEach(Array(task.tags)) { tag in
-                    TagCard(tag: tag)
+                    TagBadge(tag: tag)
                 }
             }
         }
@@ -94,7 +94,7 @@ struct TaskCard: View {
 
             Button("Delete", systemImage: "trash", role: .destructive) {
                 taskRepository.delete(task)
-                taskRepository.fetchTaskGrooupData()
+                taskRepository.fetchTaskCount()
             }
         } label: {
             Image(systemName: "ellipsis")
