@@ -79,7 +79,7 @@ extension Tag {
         tag1.name = "Home"
         tag1.color = "8F99EB"
         let tag2 = Tag(context: context)
-        tag2.name = "Office"
+        tag2.name = "Social Media"
         tag2.color = "7EC8E7"
         return [tag1, tag2]
     }

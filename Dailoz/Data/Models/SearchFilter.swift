@@ -13,6 +13,7 @@ struct SearchFilter: Equatable {
     var sortByType: Set<TType> = []
     var sortByDate: SortByDate = .newest
     var status: TStatus?
+    var date: Date = .init()
 }
 
 enum SortByDate: String, CaseIterable, Identifiable {

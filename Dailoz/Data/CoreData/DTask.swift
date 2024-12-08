@@ -143,6 +143,22 @@ extension DTask {
             predicates.append(statusPredicate)
         }
 
+        let calendar = Calendar.current
+        let year = calendar.component(.year, from: filter.date)
+        let month = calendar.component(.month, from: filter.date)
+
+        var components = DateComponents()
+        components.year = year
+        components.month = month
+        components.day = 1
+
+        if let startDate = calendar.date(from: components),
+           let endDate = calendar.date(byAdding: .month, value: 1, to: startDate)
+        {
+            let datePredicate = NSPredicate(format: "date >= %@ AND date < %@", startDate as NSDate, endDate as NSDate)
+            predicates.append(datePredicate)
+        }
+
         if !predicates.isEmpty {
             request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         }

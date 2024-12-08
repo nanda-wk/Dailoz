@@ -14,15 +14,21 @@ struct TagBadge: View {
     }
 
     var body: some View {
-        Text(tag.name)
-            .font(.robotoM(12))
-            .foregroundStyle(color)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 6)
-            .background(color.opacity(0.3), in: RoundedRectangle(cornerRadius: 5))
+        ZStack {
+            RoundedRectangle(cornerRadius: 5)
+                .fill(color.opacity(0.3))
+
+            Text(tag.name)
+                .font(.robotoM(12))
+                .foregroundStyle(color)
+                .lineLimit(1)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 6)
+        }
+        .frame(width: 60, height: 24)
     }
 }
 
 #Preview {
-    TagBadge(tag: Tag.previewTags()[0])
+    TagBadge(tag: Tag.previewTags()[1])
 }

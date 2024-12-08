@@ -23,7 +23,6 @@ struct TaskOverviewScreen: View {
     @State private var contentUnavailabelText = ""
 
     @State private var searchFilter = SearchFilter()
-    @State private var date = Date()
 
     var body: some View {
         ScrollView {
@@ -82,13 +81,13 @@ extension TaskOverviewScreen {
         Button {
             showDatePicker.toggle()
         } label: {
-            Label("\(date.format(.MMMMyyyy))", systemImage: "calendar")
+            Label("\(searchFilter.date.format(.MMMMyyyy))", systemImage: "calendar")
                 .font(.robotoM(22))
                 .tint(.textPrimary)
         }
         .padding()
         .sheet(isPresented: $showDatePicker) {
-            DatePicker("", selection: $date, displayedComponents: .date)
+            DatePicker("", selection: $searchFilter.date, displayedComponents: .date)
                 .datePickerStyle(.graphical)
                 .padding()
                 .presentationDetents([.medium])
@@ -101,7 +100,13 @@ extension TaskOverviewScreen {
     private func TaskListByDate() -> some View {
         let taskListIsEmpty = taskRepository.groupTasks.isEmpty
         if !taskListIsEmpty {
-            ForEach(taskRepository.groupTasks.sorted(by: { $0.key > $1.key }), id: \.key) { key, value in
+            ForEach(taskRepository.groupTasks.sorted(by: {
+                if searchFilter.sortByDate == .newest {
+                    $0.key > $1.key
+                } else {
+                    $0.key < $1.key
+                }
+            }), id: \.key) { key, value in
                 TaskListCell(date: key, tasks: value)
             }
             .overlay {
