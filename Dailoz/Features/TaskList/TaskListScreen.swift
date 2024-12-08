@@ -63,7 +63,7 @@ struct TaskListScreen: View {
                 .frame(height: 40)
         }
         .onAppear {
-            taskRepository.fetchTasks(with: searchFilter)
+            taskRepository.fetchTasks(with: searchFilter, offset: 0)
         }
         .onChange(of: searchFilter) {
             taskRepository.fetchTasks(with: searchFilter, offset: 0)

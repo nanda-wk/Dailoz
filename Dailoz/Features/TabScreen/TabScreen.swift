@@ -32,7 +32,7 @@ struct TabScreen: View {
             .tag(TabItem.home)
 
             NavigationStack {
-                TaskScreen()
+                TaskOverviewScreen()
             }
             .tag(TabItem.task)
 

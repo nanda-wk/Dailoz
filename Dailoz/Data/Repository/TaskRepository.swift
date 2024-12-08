@@ -57,16 +57,21 @@ final class TaskRepository: ObservableObject {
         isFetching = false
     }
 
-    func fetchGroupedTaskByDate(with searchFilter: SearchFilter) {
+    func fetchGroupedTaskByDate(with searchFilter: SearchFilter, offset: Int? = nil) {
         guard !isFetching else { return }
         isFetching = true
-        let request = DTask.fetchTasks(with: searchFilter)
+        if let offset {
+            self.offset = offset
+            tasks = []
+        }
+        let request = DTask.fetchTasks(with: searchFilter, offset: self.offset)
         do {
-            let fetchedResults = try moc.fetch(request)
-            let groupedTasks = Dictionary(grouping: fetchedResults) { task -> String in
+            let fetchedTasks = try moc.fetch(request)
+            let groupedTasks = Dictionary(grouping: fetchedTasks) { task -> String in
                 task.date.format(.dMMMMyyyy)
             }
             groupTasks = groupedTasks
+            self.offset += fetchedTasks.count
         } catch {
             print("Failed to fetch grouped tasks: \(error)")
         }

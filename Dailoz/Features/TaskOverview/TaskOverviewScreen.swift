@@ -2,89 +2,83 @@
 //  TaskOverviewScreen.swift
 //  Dailoz
 //
-//  Created by Nanda WK on 2024-12-07.
+//  Created by Nanda WK on 2024-12-08.
 //
 
 import SwiftUI
 
 struct TaskOverviewScreen: View {
-    @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var refreshManager: RefreshManager
     @EnvironmentObject private var taskRepository: TaskRepository
-    @FetchRequest(fetchRequest: Tag.all()) private var tags
 
-    let status: TStatus
-
-    // MARK: - View UI State
-
-    @State private var navTitle = "Task Overview"
     @State private var showDatePicker = false
-    @State private var showFilterSheet = true
-    @State private var contentUnavailabelText = ""
 
     @State private var searchFilter = SearchFilter()
 
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading) {
-                SearchBar(searchFilter: $searchFilter)
+                SearchTextField(searchText: $searchFilter.searchText)
+                    .padding()
 
-                DateFilterButton()
+                WeekDaySection()
 
-                TaskListByDate()
+                TaskGroupedHourSection()
             }
-            .navigationTitle(navTitle)
-            .navigationBarTitleDisplayMode(.inline)
         }
         .safeAreaInset(edge: .bottom) {
             Spacer()
                 .frame(height: 40)
         }
-        .navigationBarBackButtonHidden(true)
         .onAppear {
-            navTitle = status.rawValue
-            searchFilter.status = status
-            switch status {
-            case .completed:
-                contentUnavailabelText = "No completed tasks yet. Keep going!"
-            case .pending:
-                contentUnavailabelText = "No pending tasks right now. Great work!"
-            case .canceled:
-                contentUnavailabelText = "No canceled tasks yet. Keep going!"
-            case .onGoing:
-                contentUnavailabelText = "No on going tasks yet. Keep going!"
-            }
-
-            taskRepository.fetchGroupedTaskByDate(with: searchFilter)
+            searchFilter.isMonthly = true
+            taskRepository.fetchTasks(with: searchFilter, offset: 0)
         }
         .onChange(of: searchFilter) {
-            taskRepository.fetchGroupedTaskByDate(with: searchFilter)
-        }
-        .onChange(of: refreshManager.refreshId) {
-            taskRepository.fetchGroupedTaskByDate(with: searchFilter)
-        }
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "chevron.backward")
-                }
-                .tint(.royalBlue)
-            }
+            taskRepository.fetchTasks(with: searchFilter, offset: 0)
         }
     }
 }
 
 extension TaskOverviewScreen {
-    private func DateFilterButton() -> some View {
-        Button {
-            searchFilter.isMonthly = true
-            showDatePicker.toggle()
-        } label: {
-            Label("\(searchFilter.date.format(.MMMMyyyy))", systemImage: "calendar")
-                .font(.robotoM(22))
-                .tint(.textPrimary)
+    @ViewBuilder
+    private func WeekDaySection() -> some View {
+        let rdm = Int.random(in: 0 ..< 7)
+        VStack {
+            HStack {
+                Text("Task")
+                    .font(.robotoB(26))
+                    .foregroundStyle(.textPrimary)
+
+                Spacer()
+
+                Button {
+                    showDatePicker.toggle()
+                } label: {
+                    Label("\(searchFilter.date.format(.MMMMyyyy))", systemImage: "calendar")
+                        .font(.robotoR(14))
+                        .tint(.textSecondary)
+                }
+            }
+
+            LazyHStack {
+                ForEach(0 ..< 7) { index in
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(index == rdm ? .royalBlue : .clear)
+
+                        VStack(spacing: 10) {
+                            Text("MO")
+                                .font(.robotoM(18))
+
+                            Text("1\(index + 1)")
+                                .font(.robotoR(16))
+                        }
+                        .foregroundStyle(index == rdm ? .white : .textPrimary)
+                        .padding(.vertical)
+                    }
+                    .frame(width: 46)
+                }
+            }
         }
         .padding()
         .sheet(isPresented: $showDatePicker) {
@@ -98,36 +92,59 @@ extension TaskOverviewScreen {
     }
 
     @ViewBuilder
-    private func TaskListByDate() -> some View {
-        let taskListIsEmpty = taskRepository.groupTasks.isEmpty
-        if !taskListIsEmpty {
-            ForEach(taskRepository.groupTasks.sorted(by: {
-                if searchFilter.sortByDate == .newest {
-                    $0.key > $1.key
-                } else {
-                    $0.key < $1.key
-                }
-            }), id: \.key) { key, value in
-                TaskListCell(date: key, tasks: value)
-            }
-            .overlay {
-                if taskRepository.isFetching {
-                    ProgressView()
-                        .foregroundStyle(.royalBlue)
-                }
-            }
+    private func TaskGroupedHourSection() -> some View {
+        let today = if Date().format(.dMMMMyyyy) == searchFilter.date.format(.dMMMMyyyy) {
+            "Today"
         } else {
-            ContentUnavailableView(contentUnavailabelText, systemImage: "text.page.badge.magnifyingglass")
+            searchFilter.date.format(.dMMMMyyyy)
+        }
+        HStack {
+            Text(today)
+                .font(.robotoM(22))
                 .foregroundStyle(.textPrimary)
+
+            Spacer()
+
+            Text(Date().format(.hhmm_a))
+                .font(.robotoR(16))
+                .foregroundStyle(.black)
+        }
+        .padding(.horizontal)
+
+        ForEach(taskRepository.tasks) { _ in
+            TaskList()
+
+            if taskRepository.isFetching {
+                ProgressView()
+                    .foregroundStyle(.royalBlue)
+                    .padding()
+            } else {
+                Color.clear
+                    .frame(height: 1)
+                    .onAppear {
+                        taskRepository.fetchTasks(with: searchFilter)
+                    }
+            }
         }
     }
 
-    private func TaskListCell(date: String, tasks: [DTask]) -> some View {
-        Section {
-            GeometryReader { geometry in
+    @ViewBuilder
+    private func TaskList() -> some View {
+        Divider()
+            .padding(.horizontal)
+            .padding(.vertical, 10)
+
+        GeometryReader { geometry in
+            HStack {
+                Text("07:00")
+                    .font(.robotoM(16))
+                    .foregroundStyle(.textSecondary)
+                    .padding(.leading)
+                    .padding(.trailing, 10)
+
                 ScrollView(.horizontal) {
                     LazyHStack(spacing: 12) {
-                        ForEach(tasks) { task in
+                        ForEach(taskRepository.tasks) { task in
                             TaskCard(task: task)
                                 .frame(width: geometry.size.width * 0.5)
                         }
@@ -138,20 +155,14 @@ extension TaskOverviewScreen {
                 .scrollTargetBehavior(.viewAligned)
                 .contentMargins(.horizontal, 20, for: .scrollContent)
             }
-            .frame(height: 130)
-        } header: {
-            Text(date)
-                .font(.robotoR(16))
-                .foregroundStyle(.textSecondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
         }
+        .frame(height: 130)
     }
 }
 
 #Preview {
     NavigationStack {
-        TaskOverviewScreen(status: .pending)
+        TaskOverviewScreen()
             .previewEnvironment()
     }
 }

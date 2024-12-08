@@ -74,13 +74,13 @@ struct HomeScreen: View {
             HStack(spacing: 20) {
                 VStack(spacing: 20) {
                     NavigationLink {
-                        TaskOverviewScreen(status: .completed)
+                        TaskHistoryScreen(status: .completed)
                     } label: {
                         HeroCard(count: taskRepository.taskCountWithStatus[.completed] ?? 0, icon: Image(.iMac), title: "Completed", background: .completed)
                     }
 
                     NavigationLink {
-                        TaskOverviewScreen(status: .canceled)
+                        TaskHistoryScreen(status: .canceled)
                     } label: {
                         HeroCard(count: taskRepository.taskCountWithStatus[.canceled] ?? 0, icon: Image(systemName: "xmark.square"), title: "Canceled", background: .canceled, foreground: .white, isSmallIcon: true)
                     }
@@ -88,13 +88,13 @@ struct HomeScreen: View {
 
                 VStack(spacing: 20) {
                     NavigationLink {
-                        TaskOverviewScreen(status: .pending)
+                        TaskHistoryScreen(status: .pending)
                     } label: {
                         HeroCard(count: taskRepository.taskCountWithStatus[.pending] ?? 0, icon: Image(systemName: "clock"), title: "Pending", background: .pending, foreground: .white, isSmallIcon: true)
                     }
 
                     NavigationLink {
-                        TaskOverviewScreen(status: .onGoing)
+                        TaskHistoryScreen(status: .onGoing)
                     } label: {
                         HeroCard(count: taskRepository.taskCountWithStatus[.onGoing] ?? 0, icon: Image(.folder), title: "On Going", background: .ongoing)
                     }
@@ -167,10 +167,6 @@ struct HomeScreen: View {
                     }
                 }
             }
-            Button("Add Dummy Tasks") {
-                DTask.preview(count: 100)
-            }
-            .buttonStyle(.borderedProminent)
 
             Spacer()
                 .frame(height: 10)
