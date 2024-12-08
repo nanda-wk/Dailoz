@@ -10,31 +10,29 @@ import Foundation
 @MainActor
 final class TaskRepository: ObservableObject {
     @Published var tasks: [DTask] = []
-    @Published var todayTasks: [DTask] = []
     @Published var taskCountWithStatus: [TStatus: Int] = [:]
     @Published var groupTasks: [String: [DTask]] = [:]
     @Published var isFetching = false
 
+    private var offset = 0
+
     private let stack = CoreDataStack.shared
     private lazy var moc = stack.viewContext
 
-    func fetchAllTask() {
-        let request = DTask.all()
-        do {
-            tasks = try moc.fetch(request)
-        } catch {
-            print("Failed to fetch tasks: \(error)")
-        }
-    }
-
-    func fetchTaskForToday() {
+    func fetchTasks(with searchFilter: SearchFilter, offset: Int? = nil) {
         guard !isFetching else { return }
         isFetching = true
-        let request = DTask.fetchTasksForToday()
+        if let offset {
+            self.offset = offset
+            tasks = []
+        }
+        let request = DTask.fetchTasks(with: searchFilter, offset: self.offset)
         do {
-            todayTasks = try moc.fetch(request)
+            let fetchedTasks = try moc.fetch(request)
+            tasks.append(contentsOf: fetchedTasks)
+            self.offset += fetchedTasks.count
         } catch {
-            print("Failed to fetch tasks for today: \(error)")
+            print("Failed to fetch tasks: \(error)")
         }
         isFetching = false
     }

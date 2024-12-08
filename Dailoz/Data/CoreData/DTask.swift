@@ -91,7 +91,7 @@ extension DTask {
         return request
     }
 
-    static func fetchTasksForToday() -> NSFetchRequest<DTask> {
+    static func fetchTasksForToday(batchSize: Int = 20, offset: Int = 0) -> NSFetchRequest<DTask> {
         let request = taskFetchRequest
         let calendar = Calendar.current
         let startOfToday = calendar.startOfDay(for: Date())
@@ -100,7 +100,10 @@ extension DTask {
         request.sortDescriptors = [
             NSSortDescriptor(keyPath: \DTask.date, ascending: false),
         ]
-        request.fetchLimit = 5
+        request.fetchBatchSize = batchSize
+        request.fetchOffset = offset
+        request.fetchLimit = batchSize
+
         return request
     }
 
@@ -143,19 +146,27 @@ extension DTask {
             predicates.append(statusPredicate)
         }
 
-        let calendar = Calendar.current
-        let year = calendar.component(.year, from: filter.date)
-        let month = calendar.component(.month, from: filter.date)
+        if filter.isMonthly {
+            let calendar = Calendar.current
+            let year = calendar.component(.year, from: filter.date)
+            let month = calendar.component(.month, from: filter.date)
 
-        var components = DateComponents()
-        components.year = year
-        components.month = month
-        components.day = 1
+            var components = DateComponents()
+            components.year = year
+            components.month = month
+            components.day = 1
 
-        if let startDate = calendar.date(from: components),
-           let endDate = calendar.date(byAdding: .month, value: 1, to: startDate)
-        {
-            let datePredicate = NSPredicate(format: "date >= %@ AND date < %@", startDate as NSDate, endDate as NSDate)
+            if let startDate = calendar.date(from: components),
+               let endDate = calendar.date(byAdding: .month, value: 1, to: startDate)
+            {
+                let datePredicate = NSPredicate(format: "date >= %@ AND date < %@", startDate as NSDate, endDate as NSDate)
+                predicates.append(datePredicate)
+            }
+        } else {
+            let calendar = Calendar.current
+            let startOfToday = calendar.startOfDay(for: filter.date)
+            let endOfToday = calendar.date(byAdding: .day, value: 1, to: startOfToday)!
+            let datePredicate = NSPredicate(format: "date >= %@ AND date < %@", startOfToday as NSDate, endOfToday as NSDate)
             predicates.append(datePredicate)
         }
 

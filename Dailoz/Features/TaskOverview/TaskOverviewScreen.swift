@@ -79,6 +79,7 @@ struct TaskOverviewScreen: View {
 extension TaskOverviewScreen {
     private func DateFilterButton() -> some View {
         Button {
+            searchFilter.isMonthly = true
             showDatePicker.toggle()
         } label: {
             Label("\(searchFilter.date.format(.MMMMyyyy))", systemImage: "calendar")

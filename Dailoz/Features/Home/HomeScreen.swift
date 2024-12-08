@@ -10,7 +10,6 @@ import SwiftUI
 struct HomeScreen: View {
     @EnvironmentObject private var refreshManager: RefreshManager
     @EnvironmentObject private var taskRepository: TaskRepository
-    @FetchRequest(fetchRequest: DTask.fetchTasksForToday()) var tasks
 
     @State private var taskListIsEmpty = false
 
@@ -27,7 +26,6 @@ struct HomeScreen: View {
             }
             .padding()
         }
-        .id(refreshManager.refreshId)
         .scrollIndicators(.hidden)
         .safeAreaInset(edge: .bottom) {
             Spacer()
@@ -35,7 +33,11 @@ struct HomeScreen: View {
         }
         .onAppear {
             taskRepository.fetchTaskCount()
-            taskListIsEmpty = tasks.isEmpty
+            taskRepository.fetchTasks(with: .init())
+            taskListIsEmpty = taskRepository.tasks.isEmpty
+        }
+        .onChange(of: refreshManager.refreshId) {
+            taskRepository.fetchTasks(with: .init(), offset: 0)
         }
     }
 
@@ -156,20 +158,32 @@ struct HomeScreen: View {
                 Spacer()
 
                 if !taskListIsEmpty {
-                    NavigationLink {} label: {
+                    NavigationLink {
+                        TaskListScreen(navTitle: "Today Tasks")
+                    } label: {
                         Text("View all")
                             .font(.robotoR(14))
                             .foregroundStyle(.textSecondary)
                     }
                 }
             }
+            Button("Add Dummy Tasks") {
+                DTask.preview(count: 100)
+            }
+            .buttonStyle(.borderedProminent)
 
             Spacer()
                 .frame(height: 10)
 
             if !taskListIsEmpty {
-                ForEach(tasks) { task in
+                ForEach(taskRepository.tasks.prefix(5)) { task in
                     TaskCard(task: task)
+                }
+                .overlay {
+                    if taskRepository.isFetching {
+                        ProgressView()
+                            .foregroundStyle(.royalBlue)
+                    }
                 }
             } else {
                 ContentUnavailableView("No tasks scheduled for today.", systemImage: "text.page.badge.magnifyingglass")

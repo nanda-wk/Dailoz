@@ -14,6 +14,7 @@ struct SearchFilter: Equatable {
     var sortByDate: SortByDate = .newest
     var status: TStatus?
     var date: Date = .init()
+    var isMonthly: Bool = false
 }
 
 enum SortByDate: String, CaseIterable, Identifiable {
