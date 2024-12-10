@@ -1,5 +1,5 @@
 //
-//  Tag.swift
+//  TagEntity.swift
 //  Dailoz
 //
 //  Created by Nanda WK on 2024-12-02.
@@ -9,29 +9,49 @@ import CoreData
 import Foundation
 import SwiftUI
 
-final class Tag: NSManagedObject, Identifiable {
+final class TagEntity: NSManagedObject, Identifiable {
+    @NSManaged var id: UUID
     @NSManaged var name: String
     @NSManaged var color: String
-    @NSManaged var tasks: Set<DTask>
+    @NSManaged var tasks: Set<TaskEntity>
 }
 
-extension Tag {
-    static var tagFetchRequest: NSFetchRequest<Tag> {
-        NSFetchRequest(entityName: "Tag")
+extension TagEntity {
+    static var tagFetchRequest: NSFetchRequest<TagEntity> {
+        NSFetchRequest(entityName: "TagEntity")
     }
 
-    static func all() -> NSFetchRequest<Tag> {
-        let request: NSFetchRequest<Tag> = tagFetchRequest
+    static func all() -> NSFetchRequest<TagEntity> {
+        let request: NSFetchRequest<TagEntity> = tagFetchRequest
         request.sortDescriptors = [
-            NSSortDescriptor(keyPath: \Tag.name, ascending: false),
+            NSSortDescriptor(keyPath: \TagEntity.name, ascending: false),
         ]
+        return request
+    }
+
+    static func fetchByID(_ id: UUID) -> NSFetchRequest<TagEntity> {
+        let request = tagFetchRequest
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        request.sortDescriptors = []
         return request
     }
 }
 
-extension Tag {
+extension TagEntity {
+    func fromModel(_ model: TagModel) {
+        id = model.id
+        name = model.name
+        color = model.color.hexString
+    }
+
+    func toModel() -> TagModel {
+        TagModel(id: id, name: name, color: Color(hex: color))
+    }
+}
+
+extension TagEntity {
     static func preview(count: Int, in context: NSManagedObjectContext = CoreDataStack.shared.viewContext) {
-        var tags: [Tag] = []
+        var tags: [TagEntity] = []
         let dummyTags = [
             "Home",
             "Office",
@@ -65,7 +85,7 @@ extension Tag {
         ]
 
         for _ in 0 ..< count {
-            let tag = Tag(context: context)
+            let tag = TagEntity(context: context)
             tag.name = dummyTags.randomElement()!
             tag.color = String(format: "#%06X", Int.random(in: 0 ... 0xFFFFFF))
             tags.append(tag)
@@ -73,12 +93,12 @@ extension Tag {
         try? context.save()
     }
 
-    static func previewTags() -> [Tag] {
+    static func previewTags() -> [TagEntity] {
         let context = CoreDataStack.shared.viewContext
-        let tag1 = Tag(context: context)
+        let tag1 = TagEntity(context: context)
         tag1.name = "Home"
         tag1.color = "8F99EB"
-        let tag2 = Tag(context: context)
+        let tag2 = TagEntity(context: context)
         tag2.name = "Social Media"
         tag2.color = "7EC8E7"
         return [tag1, tag2]

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TagBadge: View {
-    let tag: Tag
+    let tag: TagEntity
     private var color: Color {
         Color(hex: tag.color)
     }
@@ -30,5 +30,5 @@ struct TagBadge: View {
 }
 
 #Preview {
-    TagBadge(tag: Tag.previewTags()[1])
+    TagBadge(tag: TagEntity.previewTags()[1])
 }

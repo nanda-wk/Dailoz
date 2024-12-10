@@ -11,7 +11,7 @@ struct SearchBar: View {
     @Binding var searchFilter: SearchFilter
     var showFilter = true
 
-    @FetchRequest(fetchRequest: Tag.all()) private var tags
+    @FetchRequest(fetchRequest: TagEntity.all()) private var tags
 
     let columns: [GridItem] = .init(repeating: .init(.flexible()), count: 4)
     @State private var showFilterSheet = false
@@ -117,13 +117,13 @@ extension SearchBar {
 }
 
 extension SearchBar {
-    private func toggleSelection(tag: Tag) {
+    private func toggleSelection(tag: TagEntity) {
         if !searchFilter.sortByTags.insert(tag).inserted {
             searchFilter.sortByTags.remove(tag)
         }
     }
 
-    private func isSelected(tag: Tag) -> Bool {
+    private func isSelected(tag: TagEntity) -> Bool {
         searchFilter.sortByTags.contains(tag)
     }
 

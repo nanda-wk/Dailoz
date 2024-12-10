@@ -2,31 +2,35 @@
 //  TagRepository.swift
 //  Dailoz
 //
-//  Created by Nanda WK on 2024-12-02.
+//  Created by Nanda WK on 2024-12-10.
 //
 
 import Foundation
 
-@MainActor
-final class TagRepository: ObservableObject {
-    private let stack = CoreDataStack.shared
-    private lazy var moc = stack.viewContext
+final class TagRepository {
+    private let localDataSource: TagLocalDataSource
 
-    func save(_ tag: Tag) {
-        let context = tag.managedObjectContext ?? moc
-        do {
-            try stack.persist(in: context)
-        } catch {
-            print("Failed to save tag: \(error)")
-        }
+    init(localDataSource: TagLocalDataSource = TagLocalDataSource()) {
+        self.localDataSource = localDataSource
     }
 
-    func delete(_ tag: Tag) {
-        let context = tag.managedObjectContext ?? moc
-        do {
-            try stack.delete(tag, in: context)
-        } catch {
-            print("Failed to delete tag: \(error)")
-        }
+    func fetchTags() -> [TagModel] {
+        let tags = localDataSource.fetchTags()
+        return tags.map { TagModel.fromEntity($0) }
+    }
+
+    func createTag(with tag: TagModel) -> TagModel? {
+        let createdTag = localDataSource.create(with: tag)
+        return createdTag?.toModel()
+    }
+
+    func updateTag(id: UUID, with tag: TagModel) -> TagModel? {
+        let updatedTag = localDataSource.update(id: id, with: tag)
+        return updatedTag?.toModel()
+    }
+
+    func deleteTag(id: UUID) -> TagModel? {
+        let deletedTag = localDataSource.delete(id: id)
+        return deletedTag
     }
 }

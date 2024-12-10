@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct TaskCard: View {
-    @EnvironmentObject var taskRepository: TaskRepository
-    let task: DTask
+    @EnvironmentObject var taskRepository: TaskRepositoryOld
+    let task: TaskEntity
 
-    @State private var taskToEdit: DTask?
+    @State private var taskToEdit: TaskEntity?
 
     var body: some View {
         if let _ = task.managedObjectContext {
@@ -113,6 +113,6 @@ struct TaskCard: View {
 }
 
 #Preview {
-    TaskCard(task: DTask.oneTask())
+    TaskCard(task: TaskEntity.oneTask())
         .previewEnvironment()
 }

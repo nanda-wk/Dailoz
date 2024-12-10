@@ -1,5 +1,5 @@
 //
-//  DTask.swift
+//  TaskEntity.swift
 //  Dailoz
 //
 //  Created by Nanda WK on 2024-12-02.
@@ -9,7 +9,8 @@ import CoreData
 import Foundation
 import SwiftUICore
 
-final class DTask: NSManagedObject, Identifiable {
+final class TaskEntity: NSManagedObject, Identifiable {
+    @NSManaged var id: UUID
     @NSManaged var title: String
     @NSManaged var date: Date
     @NSManaged var startTime: Date
@@ -17,7 +18,7 @@ final class DTask: NSManagedObject, Identifiable {
     @NSManaged var tDescription: String
     @NSManaged var type: String
     @NSManaged var status: String
-    @NSManaged var tags: Set<Tag>
+    @NSManaged var tags: Set<TagEntity>
 
     var typeEnum: TType {
         if let type = TType(rawValue: type) {
@@ -78,27 +79,27 @@ final class DTask: NSManagedObject, Identifiable {
     }
 }
 
-extension DTask {
-    static var taskFetchRequest: NSFetchRequest<DTask> {
-        NSFetchRequest(entityName: "DTask")
+extension TaskEntity {
+    static var taskFetchRequest: NSFetchRequest<TaskEntity> {
+        NSFetchRequest(entityName: "TaskEntity")
     }
 
-    static func all() -> NSFetchRequest<DTask> {
-        let request: NSFetchRequest<DTask> = taskFetchRequest
+    static func all() -> NSFetchRequest<TaskEntity> {
+        let request: NSFetchRequest<TaskEntity> = taskFetchRequest
         request.sortDescriptors = [
-            NSSortDescriptor(keyPath: \DTask.date, ascending: false),
+            NSSortDescriptor(keyPath: \TaskEntity.date, ascending: false),
         ]
         return request
     }
 
-    static func fetchTasksForToday(batchSize: Int = 20, offset: Int = 0) -> NSFetchRequest<DTask> {
+    static func fetchTasksForToday(batchSize: Int = 20, offset: Int = 0) -> NSFetchRequest<TaskEntity> {
         let request = taskFetchRequest
         let calendar = Calendar.current
         let startOfToday = calendar.startOfDay(for: Date())
         let endOfToday = calendar.date(byAdding: .day, value: 1, to: startOfToday)!
         request.predicate = NSPredicate(format: "date >= %@ AND date < %@", startOfToday as NSDate, endOfToday as NSDate)
         request.sortDescriptors = [
-            NSSortDescriptor(keyPath: \DTask.date, ascending: false),
+            NSSortDescriptor(keyPath: \TaskEntity.date, ascending: false),
         ]
         request.fetchBatchSize = batchSize
         request.fetchOffset = offset
@@ -108,7 +109,7 @@ extension DTask {
     }
 
     static func fetchTaskCountGroupedByStatus() -> NSFetchRequest<NSFetchRequestResult> {
-        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "DTask")
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: "TaskEntity")
         request.resultType = .dictionaryResultType
 
         let countExpression = NSExpressionDescription()
@@ -122,7 +123,7 @@ extension DTask {
         return request
     }
 
-    static func fetchTasks(with filter: SearchFilter, batchSize: Int = 20, offset: Int = 0) -> NSFetchRequest<DTask> {
+    static func fetchTasks(with filter: SearchFilter, batchSize: Int = 20, offset: Int = 0) -> NSFetchRequest<TaskEntity> {
         let request = taskFetchRequest
         var predicates: [NSPredicate] = []
 
@@ -175,9 +176,9 @@ extension DTask {
         }
 
         if filter.sortByDate == .newest {
-            request.sortDescriptors = [NSSortDescriptor(keyPath: \DTask.date, ascending: false)]
+            request.sortDescriptors = [NSSortDescriptor(keyPath: \TaskEntity.date, ascending: false)]
         } else {
-            request.sortDescriptors = [NSSortDescriptor(keyPath: \DTask.date, ascending: true)]
+            request.sortDescriptors = [NSSortDescriptor(keyPath: \TaskEntity.date, ascending: true)]
         }
 
         request.fetchBatchSize = batchSize
@@ -188,18 +189,18 @@ extension DTask {
     }
 }
 
-extension DTask {
+extension TaskEntity {
     static func preview(count: Int, in context: NSManagedObjectContext = CoreDataStack.shared.viewContext) {
-        var tasks: [DTask] = []
-        let tag1 = Tag(context: context)
+        var tasks: [TaskEntity] = []
+        let tag1 = TagEntity(context: context)
         tag1.name = "Home"
         tag1.color = "#11b9ac"
-        let tag2 = Tag(context: context)
+        let tag2 = TagEntity(context: context)
         tag2.name = "Office"
         tag2.color = "#ec0661"
 
         for _ in 0 ..< count {
-            let task = DTask(context: context)
+            let task = TaskEntity(context: context)
             task.title = "Task \(tasks.count + 1)"
             task.tDescription = "Description \(tasks.count + 1)"
             task.tags = [tag1, tag2]
@@ -208,16 +209,16 @@ extension DTask {
         try? context.save()
     }
 
-    static func oneTask() -> DTask {
+    static func oneTask() -> TaskEntity {
         let context = CoreDataStack.shared.viewContext
-        let tag1 = Tag(context: context)
+        let tag1 = TagEntity(context: context)
         tag1.name = "Home"
         tag1.color = "#11b9ac"
-        let tag2 = Tag(context: context)
+        let tag2 = TagEntity(context: context)
         tag2.name = "Office"
         tag2.color = "#ec0661"
 
-        let task = DTask(context: context)
+        let task = TaskEntity(context: context)
         task.title = "Cleaning Clothes"
         task.tDescription = "Clean clothes in the closet."
         task.tags = [tag1, tag2]

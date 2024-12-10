@@ -10,8 +10,8 @@ import SwiftUI
 @main
 struct DailozApp: App {
     private let coreDataStack = CoreDataStack.shared
-    @StateObject private var taskRepository = TaskRepository()
-    @StateObject private var tagRepository = TagRepository()
+    @StateObject private var taskRepository = TaskRepositoryOld()
+    @StateObject private var tagRepository = TagRepositoryOld()
     @StateObject private var refreshManager = RefreshManager()
 
     init() {

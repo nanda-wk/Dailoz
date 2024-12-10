@@ -9,11 +9,11 @@ import SwiftUI
 
 struct HomeScreen: View {
     @EnvironmentObject private var refreshManager: RefreshManager
-    @EnvironmentObject private var taskRepository: TaskRepository
+    @EnvironmentObject private var taskRepository: TaskRepositoryOld
 
     @State private var taskListIsEmpty = false
 
-    @State private var taskToEdit: DTask?
+    @State private var taskToEdit: TaskEntity?
 
     var body: some View {
         ScrollView {

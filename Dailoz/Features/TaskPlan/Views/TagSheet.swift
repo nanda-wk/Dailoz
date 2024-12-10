@@ -8,20 +8,23 @@
 import SwiftUI
 
 struct TagSheet: View {
-    @Environment(\.managedObjectContext) private var moc
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var tagRepository: TagRepository
+    @StateObject private var vm: TagSheetVM
 
-    @Binding var tag: Tag?
-    @Binding var isRefreshed: Bool
+    let tag: TagModel?
 
-    @State private var name = ""
-    @State private var color = Color(.royalBlue)
-    @State private var tagToSave: Tag!
+    init(tag: TagModel?) {
+        self.tag = tag
+        _vm = StateObject(wrappedValue: TagSheetVM(tag: tag))
+    }
 
-    @State private var navTitle = "Add Tag"
-    @State private var btnText = "Save"
-    @State private var isDisable = true
+//    @State private var name = ""
+//    @State private var color = Color(.royalBlue)
+//    @State private var tagToSave: TagEntity!
+
+//    @State private var navTitle = "Add Tag"
+//    @State private var btnText = "Save"
+//    @State private var isDisable = true
 
     var body: some View {
         NavigationStack {
@@ -31,20 +34,20 @@ struct TagSheet: View {
                         .font(.robotoM(16))
                         .foregroundStyle(.textSecondary)
 
-                    TextField("Tag Name", text: $name)
+                    TextField("Tag Name", text: $vm.name)
                         .font(.robotoM(18))
                         .foregroundStyle(.textPrimary)
                         .textInputAutocapitalization(.never)
                         .keyboardType(.asciiCapable)
                         .autocorrectionDisabled(true)
-                        .onChange(of: name) {
-                            isDisable = name.isEmpty
+                        .onChange(of: vm.name) {
+                            vm.validate()
                         }
 
                     Divider()
                 }
 
-                ColorPicker(selection: $color) {
+                ColorPicker(selection: $vm.color) {
                     Text("Tag Color")
                         .font(.robotoM(16))
                         .foregroundStyle(.textSecondary)
@@ -53,7 +56,7 @@ struct TagSheet: View {
                 Spacer()
             }
             .padding()
-            .navigationTitle(navTitle)
+            .navigationTitle(vm.navTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -64,37 +67,20 @@ struct TagSheet: View {
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(btnText) {
-                        saveTag()
-                        isRefreshed = true
+                    Button(vm.btnText) {
+                        vm.save()
                         dismiss()
                     }
                     .tint(.royalBlue)
-                    .disabled(isDisable)
-                }
-            }
-            .onAppear {
-                if let tag {
-                    navTitle = "Edit Tag"
-                    btnText = "Update"
-                    name = tag.name
-                    color = Color(hex: tag.color)
+                    .disabled(vm.isDisabled)
                 }
             }
         }
-    }
-
-    private func saveTag() {
-        tagToSave = tag ?? Tag(context: moc)
-        tagToSave.name = name
-        tagToSave.color = color.hexString
-
-        tagRepository.save(tagToSave)
     }
 }
 
 #Preview {
     NavigationStack {
-        TagSheet(tag: .constant(nil), isRefreshed: .constant(false))
+        TagSheet(tag: nil)
     }
 }
