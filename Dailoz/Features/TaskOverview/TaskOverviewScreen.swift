@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TaskOverviewScreen: View {
-    @EnvironmentObject private var taskRepository: TaskRepository
+    @EnvironmentObject private var taskRepository: TaskRepositoryOld
 
     @State private var showDatePicker = false
 

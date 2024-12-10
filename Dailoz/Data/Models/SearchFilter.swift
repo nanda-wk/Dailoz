@@ -9,7 +9,7 @@ import Foundation
 
 struct SearchFilter: Equatable {
     var searchText: String = ""
-    var sortByTags: Set<Tag> = []
+    var sortByTags: Set<TagEntity> = []
     var sortByType: Set<TType> = []
     var sortByDate: SortByDate = .newest
     var status: TStatus?

@@ -10,12 +10,14 @@ import SwiftUI
 struct TaskPlanScreen: View {
     @Environment(\.managedObjectContext) private var moc
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var taskRepository: TaskRepository
-    @EnvironmentObject private var tagRepository: TagRepository
+    @EnvironmentObject private var taskRepository: TaskRepositoryOld
+    @EnvironmentObject private var tagRepository: TagRepositoryOld
     @EnvironmentObject private var refreshManager: RefreshManager
-    @FetchRequest(fetchRequest: Tag.all()) private var tagList
+    @FetchRequest(fetchRequest: TagEntity.all()) private var tagList
 
-    @Binding var task: DTask?
+    @StateObject private var vm = TaskPlanScreenVM(task: nil)
+
+    @Binding var task: TaskEntity?
 
     @State private var title = ""
     @State private var date = Date()
@@ -23,7 +25,7 @@ struct TaskPlanScreen: View {
     @State private var endTime = Date()
     @State private var description = ""
     @State private var type = TType.personal
-    @State private var tags: Set<Tag> = []
+    @State private var tags: Set<TagEntity> = []
 
     // MARK: - View UI State
 
@@ -37,8 +39,8 @@ struct TaskPlanScreen: View {
     @State private var showTagSheet = false
     @State private var showNewTagButton = true
 
-    @State private var taskToSave: DTask!
-    @State private var tagToUpdate: Tag?
+    @State private var taskToSave: TaskEntity!
+    @State private var tagToUpdate: TagModel?
     @State private var isRefreshed = false
 
     private let coreDataStack = CoreDataStack.shared
@@ -227,11 +229,11 @@ extension TaskPlanScreen {
                 .foregroundStyle(.textSecondary)
 
             LazyVGrid(columns: columns) {
-                ForEach(tagList) { tag in
-                    ChipView(name: tag.name, color: Color(hex: tag.color), isSelected: isSelectedTag(tag))
-                        .onTapGesture {
-                            toggleTagSelection(tag)
-                        }
+                ForEach(vm.tags) { tag in
+                    ChipView(name: tag.name, color: tag.color, isSelected: false)
+//                        .onTapGesture {
+//                            toggleTagSelection(tag)
+//                        }
                         .contextMenu {
                             Button("Edit", systemImage: "pencil") {
                                 tagToUpdate = tag
@@ -239,7 +241,7 @@ extension TaskPlanScreen {
                             }
 
                             Button("Delete", systemImage: "trash", role: .destructive) {
-                                tagRepository.delete(tag)
+                                vm.deleteTag(for: tag)
                                 checkTagsCount()
                                 isRefreshed = true
                             }
@@ -262,8 +264,9 @@ extension TaskPlanScreen {
         }
         .sheet(isPresented: $showTagSheet) {
             checkTagsCount()
+            vm.fetchTags()
         } content: {
-            TagSheet(tag: $tagToUpdate, isRefreshed: $isRefreshed)
+            TagSheet(tag: tagToUpdate)
                 .presentationDetents([.fraction(0.4)])
         }
     }
@@ -289,18 +292,18 @@ extension TaskPlanScreen {
         showNewTagButton = tagList.count < 8
     }
 
-    private func toggleTagSelection(_ tag: Tag) {
+    private func toggleTagSelection(_ tag: TagEntity) {
         if !tags.insert(tag).inserted {
             tags.remove(tag)
         }
     }
 
-    private func isSelectedTag(_ tag: Tag) -> Bool {
+    private func isSelectedTag(_ tag: TagEntity) -> Bool {
         tags.contains(tag)
     }
 
     private func saveTask() {
-        taskToSave = task ?? DTask(context: moc)
+        taskToSave = task ?? TaskEntity(context: moc)
         taskToSave.title = title
         taskToSave.date = date
         taskToSave.startTime = startTime

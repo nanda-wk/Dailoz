@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23507" systemVersion="24B91" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
-    <entity name="DTask" representedClassName=".DTask" syncable="YES">
+    <entity name="TagEntity" representedClassName=".TagEntity" syncable="YES">
+        <attribute name="color" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" attributeType="String"/>
+        <relationship name="dTasks" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TaskEntity" inverseName="tags" inverseEntity="TaskEntity"/>
+    </entity>
+    <entity name="TaskEntity" representedClassName=".TaskEntity" syncable="YES">
         <attribute name="date" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="endTime" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="startTime" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="status" attributeType="String"/>
         <attribute name="tDescription" attributeType="String"/>
         <attribute name="title" attributeType="String"/>
         <attribute name="type" attributeType="String"/>
-        <relationship name="tags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Tag" inverseName="dTasks" inverseEntity="Tag"/>
-    </entity>
-    <entity name="Tag" representedClassName=".Tag" syncable="YES">
-        <attribute name="color" attributeType="String"/>
-        <attribute name="name" attributeType="String"/>
-        <relationship name="dTasks" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DTask" inverseName="tags" inverseEntity="DTask"/>
+        <relationship name="tags" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TagEntity" inverseName="dTasks" inverseEntity="TagEntity"/>
     </entity>
 </model>

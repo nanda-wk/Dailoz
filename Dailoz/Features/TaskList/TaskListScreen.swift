@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TaskListScreen: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var taskRepository: TaskRepository
+    @EnvironmentObject private var taskRepository: TaskRepositoryOld
 
     let navTitle: String
     @State private var showTaskPlanScreen = false

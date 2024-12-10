@@ -10,8 +10,8 @@ import SwiftUI
 struct TaskHistoryScreen: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var refreshManager: RefreshManager
-    @EnvironmentObject private var taskRepository: TaskRepository
-    @FetchRequest(fetchRequest: Tag.all()) private var tags
+    @EnvironmentObject private var taskRepository: TaskRepositoryOld
+    @FetchRequest(fetchRequest: TagEntity.all()) private var tags
 
     let status: TStatus
 
@@ -123,7 +123,7 @@ extension TaskHistoryScreen {
         }
     }
 
-    private func TaskListCell(date: String, tasks: [DTask]) -> some View {
+    private func TaskListCell(date: String, tasks: [TaskEntity]) -> some View {
         Section {
             GeometryReader { geometry in
                 ScrollView(.horizontal) {
