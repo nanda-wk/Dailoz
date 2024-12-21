@@ -9,34 +9,27 @@ import SwiftUI
 
 struct TaskListScreen: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var taskRepository: TaskRepositoryOld
+    @EnvironmentObject var uiStateManager: UIStateManager
+
+    @StateObject var vm = TaskListScreenVM()
 
     let navTitle: String
-    @State private var showTaskPlanScreen = false
 
-    @State private var searchFilter = SearchFilter()
+    @State private var showTaskPlanScreen = false
 
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             ScrollView {
-                SearchBar(searchFilter: $searchFilter)
+                SearchBar(searchFilter: $vm.searchFilter)
 
                 LazyVStack(spacing: 20) {
-                    ForEach(taskRepository.tasks) { task in
-                        TaskCard(task: task)
+                    ForEach(vm.tasks) { task in
+                        TaskCard(task: task) {
+                            vm.onDeleteTask(task)
+                        }
                     }
 
-                    if taskRepository.isFetching {
-                        ProgressView()
-                            .foregroundStyle(.royalBlue)
-                            .padding()
-                    } else {
-                        Color.clear
-                            .frame(height: 1)
-                            .onAppear {
-                                taskRepository.fetchTasks(with: searchFilter)
-                            }
-                    }
+                    CustomProgressView()
                 }
                 .padding()
             }
@@ -55,33 +48,52 @@ struct TaskListScreen: View {
             }
             .padding()
         }
+        .id(uiStateManager.refreshId)
         .navigationTitle(navTitle)
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
-        .safeAreaInset(edge: .bottom) {
-            Spacer()
-                .frame(height: 40)
-        }
         .onAppear {
-            taskRepository.fetchTasks(with: searchFilter, offset: 0)
+            vm.fetchTask(offset: 0)
+            uiStateManager.showTabBar = false
         }
-        .onChange(of: searchFilter) {
-            taskRepository.fetchTasks(with: searchFilter, offset: 0)
+        .onChange(of: vm.searchFilter) {
+            vm.fetchTask(offset: 0)
+        }
+        .onChange(of: uiStateManager.refreshId) {
+            vm.fetchTask(offset: 0)
         }
         .fullScreenCover(isPresented: $showTaskPlanScreen) {
             NavigationStack {
-                TaskPlanScreen(task: .constant(nil))
+                TaskPlanScreen()
             }
         }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
+                    uiStateManager.showTabBar = true
                     dismiss()
                 } label: {
                     Image(systemName: "chevron.backward")
                 }
                 .tint(.royalBlue)
             }
+        }
+    }
+}
+
+extension TaskListScreen {
+    @ViewBuilder
+    private func CustomProgressView() -> some View {
+        if vm.isLoading {
+            ProgressView()
+                .foregroundStyle(.royalBlue)
+                .padding()
+        } else {
+            Color.clear
+                .frame(height: 1)
+                .onAppear {
+                    vm.fetchTask()
+                }
         }
     }
 }

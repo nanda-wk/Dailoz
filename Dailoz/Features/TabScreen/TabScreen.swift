@@ -8,18 +8,47 @@
 import SwiftUI
 
 struct TabScreen: View {
+    @EnvironmentObject var uiStateManager: UIStateManager
     @State private var selected: TabItem = .home
     @State private var showTaskPlanScreen = false
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            NativeTabView()
+            Group {
+                switch selected {
+                case .home:
+                    NavigationStack {
+                        HomeScreen()
+                    }
+                case .task:
+                    NavigationStack {
+                        TaskOverviewScreen()
+                    }
+                case .activity:
+                    NavigationStack {
+                        ActivityScreen()
+                    }
+                case .profile:
+                    NavigationStack {
+                        ProfileScreen()
+                    }
+                }
+            }
+            .safeAreaInset(edge: .bottom) {
+                Spacer()
+                    .frame(height: 40)
+            }
 
-            CustomTabBar()
+            if uiStateManager.showTabBar {
+                CustomTabBar()
+            }
+        }
+        .onAppear {
+            uiStateManager.showTabBar = true
         }
         .fullScreenCover(isPresented: $showTaskPlanScreen) {
             NavigationStack {
-                TaskPlanScreen(task: .constant(nil))
+                TaskPlanScreen()
             }
         }
     }

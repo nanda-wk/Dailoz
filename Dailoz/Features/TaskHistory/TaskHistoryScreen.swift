@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TaskHistoryScreen: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var refreshManager: RefreshManager
+    @EnvironmentObject private var refreshManager: UIStateManager
     @EnvironmentObject private var taskRepository: TaskRepositoryOld
     @FetchRequest(fetchRequest: TagEntity.all()) private var tags
 
@@ -129,7 +129,7 @@ extension TaskHistoryScreen {
                 ScrollView(.horizontal) {
                     LazyHStack(spacing: 12) {
                         ForEach(tasks) { task in
-                            TaskCard(task: task)
+                            TaskCard(task: task) {}
                                 .frame(width: geometry.size.width * 0.5)
                         }
                     }

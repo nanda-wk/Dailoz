@@ -10,7 +10,6 @@ import Foundation
 import SwiftUI
 
 final class TagEntity: NSManagedObject, Identifiable {
-    @NSManaged var id: UUID
     @NSManaged var name: String
     @NSManaged var color: String
     @NSManaged var tasks: Set<TaskEntity>
@@ -28,24 +27,11 @@ extension TagEntity {
         ]
         return request
     }
-
-    static func fetchByID(_ id: UUID) -> NSFetchRequest<TagEntity> {
-        let request = tagFetchRequest
-        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
-        request.sortDescriptors = []
-        return request
-    }
 }
 
 extension TagEntity {
-    func fromModel(_ model: TagModel) {
-        id = model.id
-        name = model.name
-        color = model.color.hexString
-    }
-
-    func toModel() -> TagModel {
-        TagModel(id: id, name: name, color: Color(hex: color))
+    var getColor: Color {
+        Color(hex: color)
     }
 }
 

@@ -22,18 +22,10 @@ final class TagLocalDataSource {
         return []
     }
 
-    func save(_ tag: TagEntity) {
-        let context = tag.managedObjectContext ?? moc
-        do {
-            try stack.persist(in: context)
-        } catch {
-            print("Failed to save tag: \(error)")
-        }
-    }
-
-    func create(with tag: TagModel) -> TagEntity? {
+    func create(name: String, color: String) -> TagEntity? {
         let entity = TagEntity(context: moc)
-        entity.fromModel(tag)
+        entity.name = name
+        entity.color = color
         guard let context = entity.managedObjectContext else { return nil }
         do {
             try stack.persist(in: context)
@@ -43,30 +35,26 @@ final class TagLocalDataSource {
         return entity
     }
 
-    func update(id: UUID, with tag: TagModel) -> TagEntity? {
-        let fetchRequest = TagEntity.fetchByID(id)
+    func update(tag: TagEntity) -> TagEntity? {
+        guard let context = tag.managedObjectContext else {
+            return nil
+        }
         do {
-            if let tagEntity = try moc.fetch(fetchRequest).first {
-                tagEntity.fromModel(tag)
-                return tagEntity
-            }
+            try stack.persist(in: context)
         } catch {
-            print("Failed to update tag with ID<\(id)>: \(error)")
+            print("Failed to update tag: \(error)")
         }
         return nil
     }
 
-    func delete(id: UUID) -> TagModel? {
-        let fetchRequest = TagEntity.fetchByID(id)
-        do {
-            if let tagEntity = try moc.fetch(fetchRequest).first, let context = tagEntity.managedObjectContext {
-                let tagModel = tagEntity.toModel()
-                try stack.delete(tagEntity, in: context)
-                return tagModel
-            }
-        } catch {
-            print("Failed to delete tag with id<\(id)>: \(error)")
+    func delete(tag: TagEntity) {
+        guard let context = tag.managedObjectContext else {
+            return
         }
-        return nil
+        do {
+            try stack.delete(tag, in: context)
+        } catch {
+            print("Failed to delete tag: \(error)")
+        }
     }
 }
