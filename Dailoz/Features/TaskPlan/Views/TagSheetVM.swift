@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-@MainActor
 final class TagSheetVM: ObservableObject {
     // MARK: - View UI State
 
@@ -29,16 +28,16 @@ final class TagSheetVM: ObservableObject {
         }
     }
 
-    private var tag: TagModel?
+    private var tag: TagEntity?
 
     private let tagRepository: TagRepository
 
-    init(tag: TagModel?, tagRepository: TagRepository = TagRepository()) {
+    init(tag: TagEntity?, tagRepository: TagRepository = TagRepository()) {
         if let tag {
             navTitle = "Edit Tag"
             btnText = "Update"
             name = tag.name
-            color = tag.color
+            color = Color(hex: tag.color)
         }
 
         self.tag = tag
@@ -46,13 +45,12 @@ final class TagSheetVM: ObservableObject {
     }
 
     func save() {
-        if var tagToUpdate = tag {
+        if let tagToUpdate = tag {
             tagToUpdate.name = name
-            tagToUpdate.color = color
-            _ = tagRepository.updateTag(id: tagToUpdate.id, with: tagToUpdate)
+            tagToUpdate.color = color.hexString
+            _ = tagRepository.updateTag(tag: tagToUpdate)
         } else {
-            let newTag = TagModel(id: .init(), name: name, color: color)
-            _ = tagRepository.createTag(with: newTag)
+            _ = tagRepository.createTag(name: name, color: color)
         }
     }
 

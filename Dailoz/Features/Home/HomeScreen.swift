@@ -8,12 +8,8 @@
 import SwiftUI
 
 struct HomeScreen: View {
-    @EnvironmentObject private var refreshManager: RefreshManager
-    @EnvironmentObject private var taskRepository: TaskRepositoryOld
-
-    @State private var taskListIsEmpty = false
-
-    @State private var taskToEdit: TaskEntity?
+    @EnvironmentObject var uiStateManager: UIStateManager
+    @StateObject var vm = HomeScreenVM()
 
     var body: some View {
         ScrollView {
@@ -26,21 +22,18 @@ struct HomeScreen: View {
             }
             .padding()
         }
+        .id(uiStateManager.refreshId)
         .scrollIndicators(.hidden)
-        .safeAreaInset(edge: .bottom) {
-            Spacer()
-                .frame(height: 40)
-        }
         .onAppear {
-            taskRepository.fetchTaskCount()
-            taskRepository.fetchTasks(with: .init())
-            taskListIsEmpty = taskRepository.tasks.isEmpty
+            vm.fetchTask()
         }
-        .onChange(of: refreshManager.refreshId) {
-            taskRepository.fetchTasks(with: .init(), offset: 0)
+        .onChange(of: uiStateManager.refreshId) {
+            vm.fetchTask()
         }
     }
+}
 
+extension HomeScreen {
     private func NavBarSection() -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 12) {
@@ -76,13 +69,13 @@ struct HomeScreen: View {
                     NavigationLink {
                         TaskHistoryScreen(status: .completed)
                     } label: {
-                        HeroCard(count: taskRepository.taskCountWithStatus[.completed] ?? 0, icon: Image(.iMac), title: "Completed", background: .completed)
+                        HeroCard(count: vm.completedCount, icon: Image(.iMac), title: "Completed", background: .completed)
                     }
 
                     NavigationLink {
                         TaskHistoryScreen(status: .canceled)
                     } label: {
-                        HeroCard(count: taskRepository.taskCountWithStatus[.canceled] ?? 0, icon: Image(systemName: "xmark.square"), title: "Canceled", background: .canceled, foreground: .white, isSmallIcon: true)
+                        HeroCard(count: vm.canceledCount, icon: Image(systemName: "xmark.square"), title: "Canceled", background: .canceled, foreground: .white, isSmallIcon: true)
                     }
                 }
 
@@ -90,13 +83,13 @@ struct HomeScreen: View {
                     NavigationLink {
                         TaskHistoryScreen(status: .pending)
                     } label: {
-                        HeroCard(count: taskRepository.taskCountWithStatus[.pending] ?? 0, icon: Image(systemName: "clock"), title: "Pending", background: .pending, foreground: .white, isSmallIcon: true)
+                        HeroCard(count: vm.pendingCount, icon: Image(systemName: "clock"), title: "Pending", background: .pending, foreground: .white, isSmallIcon: true)
                     }
 
                     NavigationLink {
                         TaskHistoryScreen(status: .onGoing)
                     } label: {
-                        HeroCard(count: taskRepository.taskCountWithStatus[.onGoing] ?? 0, icon: Image(.folder), title: "On Going", background: .ongoing)
+                        HeroCard(count: vm.onGoingCount, icon: Image(.folder), title: "On Going", background: .ongoing)
                     }
                 }
             }
@@ -157,7 +150,7 @@ struct HomeScreen: View {
 
                 Spacer()
 
-                if !taskListIsEmpty {
+                if !vm.tasksIsEmpty {
                     NavigationLink {
                         TaskListScreen(navTitle: "Today Tasks")
                     } label: {
@@ -171,14 +164,10 @@ struct HomeScreen: View {
             Spacer()
                 .frame(height: 10)
 
-            if !taskListIsEmpty {
-                ForEach(taskRepository.tasks.prefix(5)) { task in
-                    TaskCard(task: task)
-                }
-                .overlay {
-                    if taskRepository.isFetching {
-                        ProgressView()
-                            .foregroundStyle(.royalBlue)
+            if !vm.tasksIsEmpty {
+                ForEach(vm.tasks.prefix(5)) { task in
+                    TaskCard(task: task) {
+                        vm.onDeleteTask(task)
                     }
                 }
             } else {

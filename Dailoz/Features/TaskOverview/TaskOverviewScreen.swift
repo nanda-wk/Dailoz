@@ -145,7 +145,7 @@ extension TaskOverviewScreen {
                 ScrollView(.horizontal) {
                     LazyHStack(spacing: 12) {
                         ForEach(taskRepository.tasks) { task in
-                            TaskCard(task: task)
+                            TaskCard(task: task) {}
                                 .frame(width: geometry.size.width * 0.5)
                         }
                     }

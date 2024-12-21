@@ -13,6 +13,6 @@ extension View {
         environment(\.managedObjectContext, CoreDataStack.shared.viewContext)
             .environmentObject(TaskRepositoryOld())
             .environmentObject(TagRepositoryOld())
-            .environmentObject(RefreshManager())
+            .environmentObject(UIStateManager())
     }
 }

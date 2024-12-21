@@ -5,7 +5,7 @@
 //  Created by Nanda WK on 2024-12-10.
 //
 
-import Foundation
+import SwiftUI
 
 final class TagRepository {
     private let localDataSource: TagLocalDataSource
@@ -14,23 +14,22 @@ final class TagRepository {
         self.localDataSource = localDataSource
     }
 
-    func fetchTags() -> [TagModel] {
+    func fetchTags() -> [TagEntity] {
         let tags = localDataSource.fetchTags()
-        return tags.map { TagModel.fromEntity($0) }
+        return tags
     }
 
-    func createTag(with tag: TagModel) -> TagModel? {
-        let createdTag = localDataSource.create(with: tag)
-        return createdTag?.toModel()
+    func createTag(name: String, color: Color) -> TagEntity? {
+        let createdTag = localDataSource.create(name: name, color: color.hexString)
+        return createdTag
     }
 
-    func updateTag(id: UUID, with tag: TagModel) -> TagModel? {
-        let updatedTag = localDataSource.update(id: id, with: tag)
-        return updatedTag?.toModel()
+    func updateTag(tag: TagEntity) -> TagEntity? {
+        let updatedTag = localDataSource.update(tag: tag)
+        return updatedTag
     }
 
-    func deleteTag(id: UUID) -> TagModel? {
-        let deletedTag = localDataSource.delete(id: id)
-        return deletedTag
+    func deleteTag(tag: TagEntity) {
+        localDataSource.delete(tag: tag)
     }
 }

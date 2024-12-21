@@ -10,7 +10,6 @@ import Foundation
 import SwiftUICore
 
 final class TaskEntity: NSManagedObject, Identifiable {
-    @NSManaged var id: UUID
     @NSManaged var title: String
     @NSManaged var date: Date
     @NSManaged var startTime: Date
@@ -89,6 +88,81 @@ extension TaskEntity {
         request.sortDescriptors = [
             NSSortDescriptor(keyPath: \TaskEntity.date, ascending: false),
         ]
+        return request
+    }
+
+    static func fetchTasks(
+        text: String = "",
+        tags: [TagEntity] = [],
+        types: [TType] = [],
+        status: [TStatus] = [],
+        monthly: Date? = nil,
+        daily: Date? = nil,
+        ascending: Bool = false,
+        batchSize: Int = 20,
+        offset: Int = 0
+    ) -> NSFetchRequest<TaskEntity> {
+        let request = taskFetchRequest
+        var predicates: [NSPredicate] = []
+
+        if !text.isEmpty {
+            let searchPredicate = NSPredicate(format: "title CONTAINS[cd] %@ OR tDescription CONTAINS[cd] %@", text, text)
+            predicates.append(searchPredicate)
+        }
+
+        if !tags.isEmpty {
+            let tagsPredicate = NSPredicate(format: "ANY tags IN %@", tags)
+            predicates.append(tagsPredicate)
+        }
+
+        if !types.isEmpty {
+            let typesPredicate = NSPredicate(format: "type IN %@", types.map(\.rawValue))
+            predicates.append(typesPredicate)
+        }
+
+        if !status.isEmpty {
+            let statusPredicate = NSPredicate(format: "status IN %@", status.map(\.rawValue))
+            predicates.append(statusPredicate)
+        }
+
+        if let monthly {
+            let calendar = Calendar.current
+            let year = calendar.component(.year, from: monthly)
+            let month = calendar.component(.month, from: monthly)
+
+            var components = DateComponents()
+            components.year = year
+            components.month = month
+            components.day = 1
+
+            if let startDate = calendar.date(from: components),
+               let endDate = calendar.date(byAdding: .month, value: 1, to: startDate)
+            {
+                let datePredicate = NSPredicate(format: "date >= %@ AND date < %@", startDate as NSDate, endDate as NSDate)
+                predicates.append(datePredicate)
+            }
+        }
+
+        if let daily {
+            let calendar = Calendar.current
+            let startOfToday = calendar.startOfDay(for: daily)
+            let endOfToday = calendar.date(byAdding: .day, value: 1, to: startOfToday)!
+            let datePredicate = NSPredicate(format: "date >= %@ AND date < %@", startOfToday as NSDate, endOfToday as NSDate)
+            predicates.append(datePredicate)
+        }
+
+        if !predicates.isEmpty {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        }
+
+        request.sortDescriptors = [
+            NSSortDescriptor(keyPath: \TaskEntity.date, ascending: ascending),
+        ]
+
+        request.fetchBatchSize = batchSize
+        request.fetchOffset = offset
+        request.fetchLimit = batchSize
+
         return request
     }
 

@@ -8,30 +8,13 @@
 import SwiftUI
 
 struct TaskPlanScreen: View {
-    @Environment(\.managedObjectContext) private var moc
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var taskRepository: TaskRepositoryOld
-    @EnvironmentObject private var tagRepository: TagRepositoryOld
-    @EnvironmentObject private var refreshManager: RefreshManager
+    @EnvironmentObject var refreshManager: UIStateManager
     @FetchRequest(fetchRequest: TagEntity.all()) private var tagList
-
-    @StateObject private var vm = TaskPlanScreenVM(task: nil)
-
-    @Binding var task: TaskEntity?
-
-    @State private var title = ""
-    @State private var date = Date()
-    @State private var startTime = Date()
-    @State private var endTime = Date()
-    @State private var description = ""
-    @State private var type = TType.personal
-    @State private var tags: Set<TagEntity> = []
+    @StateObject private var vm: TaskPlanScreenVM
 
     // MARK: - View UI State
 
-    @State private var navTitle = "Add Task"
-    @State private var btnText = "Create"
-    @State private var isValid = false
     @State private var showDatePicker = false
     @State private var showStartTimePicker = false
     @State private var showEndTimePicker = false
@@ -39,25 +22,25 @@ struct TaskPlanScreen: View {
     @State private var showTagSheet = false
     @State private var showNewTagButton = true
 
-    @State private var taskToSave: TaskEntity!
-    @State private var tagToUpdate: TagModel?
+    @State private var tagToUpdate: TagEntity?
     @State private var isRefreshed = false
 
     private let coreDataStack = CoreDataStack.shared
 
+    init(task: TaskEntity? = nil) {
+        _vm = StateObject(wrappedValue: TaskPlanScreenVM(task: task))
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 22) {
-                CustomTextField(title: "Title", text: $title)
-                    .onChange(of: title) {
-                        isValid = !title.isEmpty
-                    }
+                CustomTextField(title: "Title", text: $vm.title)
 
                 CustomDatePicker()
 
                 TimeSection()
 
-                CustomTextField(title: "Description", text: $description)
+                CustomTextField(title: "Description", text: $vm.description)
 
                 TypeSection()
 
@@ -66,24 +49,21 @@ struct TaskPlanScreen: View {
                 Spacer()
 
                 Button {
-                    saveTask()
-                    dismiss()
-                    taskRepository.fetchTaskCount()
+                    vm.save()
                     refreshManager.triggerRefresh()
+                    dismiss()
                 } label: {
-                    AppButton(title: btnText, isDisabled: !isValid)
+                    AppButton(title: vm.btnText, isDisabled: vm.isDisabled)
                 }
-                .disabled(!isValid)
+                .disabled(vm.isDisabled)
             }
             .padding()
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
+                    refreshManager.triggerRefresh()
                     dismiss()
-                    if isRefreshed {
-                        refreshManager.triggerRefresh()
-                    }
                 } label: {
                     Image(systemName: "xmark")
                         .font(.title3.bold())
@@ -91,12 +71,8 @@ struct TaskPlanScreen: View {
                 }
             }
         }
-        .navigationTitle(navTitle)
+        .navigationTitle(vm.navTitle)
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            setupBinding()
-            checkTagsCount()
-        }
     }
 }
 
@@ -125,7 +101,7 @@ extension TaskPlanScreen {
                 .foregroundStyle(.textSecondary)
 
             HStack {
-                Text(date.format(.dMMMMyyyy))
+                Text(vm.date.format(.dMMMMyyyy))
                     .font(.robotoM(18))
                     .foregroundStyle(.textPrimary)
 
@@ -139,7 +115,7 @@ extension TaskPlanScreen {
                         .foregroundStyle(.royalBlue.opacity(0.7))
                 }
                 .sheet(isPresented: $showDatePicker) {
-                    DatePicker("", selection: $date, displayedComponents: .date)
+                    DatePicker("", selection: $vm.date, displayedComponents: .date)
                         .datePickerStyle(.graphical)
                         .padding()
                         .presentationDetents([.medium])
@@ -163,14 +139,14 @@ extension TaskPlanScreen {
                     showStartTimePicker.toggle()
                 } label: {
                     VStack {
-                        Text(startTime.format(.hhmm_a))
+                        Text(vm.startTime.format(.hhmm_a))
                             .font(.robotoM(18))
                             .foregroundStyle(.textPrimary)
                         Divider()
                     }
                 }
                 .sheet(isPresented: $showStartTimePicker) {
-                    DatePicker("", selection: $startTime, displayedComponents: .hourAndMinute)
+                    DatePicker("", selection: $vm.startTime, displayedComponents: .hourAndMinute)
                         .datePickerStyle(.wheel)
                         .labelsHidden()
                         .tint(.royalBlue)
@@ -186,14 +162,14 @@ extension TaskPlanScreen {
                     showEndTimePicker.toggle()
                 } label: {
                     VStack {
-                        Text(endTime.format(.hhmm_a))
+                        Text(vm.endTime.format(.hhmm_a))
                             .font(.robotoM(18))
                             .foregroundStyle(.textPrimary)
                         Divider()
                     }
                 }
                 .sheet(isPresented: $showEndTimePicker) {
-                    DatePicker("", selection: $endTime, displayedComponents: .hourAndMinute)
+                    DatePicker("", selection: $vm.endTime, displayedComponents: .hourAndMinute)
                         .datePickerStyle(.wheel)
                         .labelsHidden()
                         .tint(.royalBlue)
@@ -211,7 +187,7 @@ extension TaskPlanScreen {
                 .font(.robotoM(16))
                 .foregroundStyle(.textSecondary)
 
-            Picker("", selection: $type) {
+            Picker("", selection: $vm.type) {
                 ForEach(TType.allCases) { type in
                     Text(type.rawValue)
                         .tag(type)
@@ -229,11 +205,11 @@ extension TaskPlanScreen {
                 .foregroundStyle(.textSecondary)
 
             LazyVGrid(columns: columns) {
-                ForEach(vm.tags) { tag in
-                    ChipView(name: tag.name, color: tag.color, isSelected: false)
-//                        .onTapGesture {
-//                            toggleTagSelection(tag)
-//                        }
+                ForEach(tagList) { tag in
+                    ChipView(name: tag.name, color: tag.getColor, isSelected: vm.isSelectedTag(tag))
+                        .onTapGesture {
+                            vm.toggleTagSelection(tag)
+                        }
                         .contextMenu {
                             Button("Edit", systemImage: "pencil") {
                                 tagToUpdate = tag
@@ -242,8 +218,6 @@ extension TaskPlanScreen {
 
                             Button("Delete", systemImage: "trash", role: .destructive) {
                                 vm.deleteTag(for: tag)
-                                checkTagsCount()
-                                isRefreshed = true
                             }
                         }
                 }
@@ -263,8 +237,7 @@ extension TaskPlanScreen {
             }
         }
         .sheet(isPresented: $showTagSheet) {
-            checkTagsCount()
-            vm.fetchTags()
+            tagToUpdate = nil
         } content: {
             TagSheet(tag: tagToUpdate)
                 .presentationDetents([.fraction(0.4)])
@@ -272,52 +245,9 @@ extension TaskPlanScreen {
     }
 }
 
-extension TaskPlanScreen {
-    private func setupBinding() {
-        if let task {
-            navTitle = "Update Task"
-            btnText = "Update"
-
-            title = task.title
-            date = task.date
-            startTime = task.startTime
-            endTime = task.endTime
-            description = task.tDescription
-            type = task.typeEnum
-            tags = task.tags
-        }
-    }
-
-    private func checkTagsCount() {
-        showNewTagButton = tagList.count < 8
-    }
-
-    private func toggleTagSelection(_ tag: TagEntity) {
-        if !tags.insert(tag).inserted {
-            tags.remove(tag)
-        }
-    }
-
-    private func isSelectedTag(_ tag: TagEntity) -> Bool {
-        tags.contains(tag)
-    }
-
-    private func saveTask() {
-        taskToSave = task ?? TaskEntity(context: moc)
-        taskToSave.title = title
-        taskToSave.date = date
-        taskToSave.startTime = startTime
-        taskToSave.endTime = endTime
-        taskToSave.tDescription = description
-        taskToSave.type = type.rawValue
-        taskToSave.tags = tags.filter { moc.registeredObject(for: $0.objectID) != nil }
-        taskRepository.save(taskToSave)
-    }
-}
-
 #Preview {
     NavigationStack {
-        TaskPlanScreen(task: .constant(nil))
+        TaskPlanScreen()
             .previewEnvironment()
     }
 }

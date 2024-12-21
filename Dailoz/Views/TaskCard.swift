@@ -8,10 +8,15 @@
 import SwiftUI
 
 struct TaskCard: View {
-    @EnvironmentObject var taskRepository: TaskRepositoryOld
+    @EnvironmentObject var refreshManager: UIStateManager
     let task: TaskEntity
+    var onDelete: () -> Void
+    var onEnable: (() -> Void)? = nil
+    var onDisable: (() -> Void)? = nil
+    var onRestore: (() -> Void)? = nil
 
-    @State private var taskToEdit: TaskEntity?
+    @State private var showTaskPlanScreen = false
+    @State private var showingAlert = false
 
     var body: some View {
         if let _ = task.managedObjectContext {
@@ -73,46 +78,57 @@ struct TaskCard: View {
     @ViewBuilder
     private func MenuButton() -> some View {
         Menu {
-            if task.statusEnum == .onGoing {
-                Button("Disable", systemImage: "xmark.square") {}
-                    .tint(.black)
+            if task.statusEnum == .onGoing, let onDisable {
+                Button("Disable", systemImage: "xmark.square") {
+                    onDisable()
+                }
+                .tint(.black)
             }
 
-            if task.statusEnum == .pending {
-                Button("Enable", systemImage: "checkmark.square") {}
+            if task.statusEnum == .pending, let onEnable {
+                Button("Enable", systemImage: "checkmark.square") {
+                    onEnable()
+                }
             }
 
             if task.statusEnum != .completed {
                 Button("Edit", systemImage: "square.and.pencil") {
-                    taskToEdit = task
+                    showTaskPlanScreen.toggle()
                 }
             }
 
-            if task.statusEnum == .completed || task.statusEnum == .canceled {
-                Button("Restore", systemImage: "arrow.up.square") {}
+            if task.statusEnum == .completed || task.statusEnum == .canceled, let onRestore {
+                Button("Restore", systemImage: "arrow.up.square") {
+                    onRestore()
+                }
             }
 
             Button("Delete", systemImage: "trash", role: .destructive) {
-                taskRepository.delete(task)
-                taskRepository.fetchTaskCount()
+                showingAlert.toggle()
             }
+
         } label: {
             Image(systemName: "ellipsis")
                 .scaledToFit()
                 .frame(width: 24, height: 24)
                 .tint(.black)
         }
-        .fullScreenCover(item: $taskToEdit) {
-            taskToEdit = nil
-        } content: { _ in
+        .fullScreenCover(isPresented: $showTaskPlanScreen) {
             NavigationStack {
-                TaskPlanScreen(task: $taskToEdit)
+                TaskPlanScreen(task: task)
             }
+        }
+        .alert("Are you sure?", isPresented: $showingAlert) {
+            Button("Delete", role: .destructive) {
+                onDelete()
+                refreshManager.triggerRefresh()
+            }
+            Button("Cancel", role: .cancel) {}
         }
     }
 }
 
 #Preview {
-    TaskCard(task: TaskEntity.oneTask())
+    TaskCard(task: TaskEntity.oneTask(), onDelete: { print("delete") })
         .previewEnvironment()
 }

@@ -11,20 +11,12 @@ struct TagSheet: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var vm: TagSheetVM
 
-    let tag: TagModel?
+    let tag: TagEntity?
 
-    init(tag: TagModel?) {
+    init(tag: TagEntity?) {
         self.tag = tag
         _vm = StateObject(wrappedValue: TagSheetVM(tag: tag))
     }
-
-//    @State private var name = ""
-//    @State private var color = Color(.royalBlue)
-//    @State private var tagToSave: TagEntity!
-
-//    @State private var navTitle = "Add Tag"
-//    @State private var btnText = "Save"
-//    @State private var isDisable = true
 
     var body: some View {
         NavigationStack {
@@ -40,9 +32,6 @@ struct TagSheet: View {
                         .textInputAutocapitalization(.never)
                         .keyboardType(.asciiCapable)
                         .autocorrectionDisabled(true)
-                        .onChange(of: vm.name) {
-                            vm.validate()
-                        }
 
                     Divider()
                 }
