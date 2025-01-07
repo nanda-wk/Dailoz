@@ -14,6 +14,11 @@ struct HomeScreen: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 36) {
+                #if targetEnvironment(simulator)
+                    Button("Add 100 Tasks") {
+                        TaskEntity.preview(count: 100)
+                    }
+                #endif
                 NavBarSection()
 
                 HeroSection()
@@ -29,6 +34,10 @@ struct HomeScreen: View {
         }
         .onChange(of: uiStateManager.refreshId) {
             vm.fetchTask()
+        }
+        .safeAreaInset(edge: .bottom) {
+            Spacer()
+                .frame(height: 80)
         }
     }
 }
@@ -166,15 +175,14 @@ extension HomeScreen {
 
             if !vm.tasksIsEmpty {
                 ForEach(vm.tasks.prefix(5)) { task in
-                    TaskCard(task: task) {
-                        vm.onDeleteTask(task)
-                    }
+                    TaskCard(task: task)
                 }
             } else {
                 ContentUnavailableView("No tasks scheduled for today.", systemImage: "text.page.badge.magnifyingglass")
                     .foregroundStyle(.textPrimary)
             }
         }
+        .animation(.easeIn(duration: 0.3), value: vm.tasks.count)
     }
 }
 

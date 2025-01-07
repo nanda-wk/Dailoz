@@ -98,9 +98,10 @@ extension TaskEntity {
         status: [TStatus] = [],
         monthly: Date? = nil,
         daily: Date? = nil,
+        hourly: Bool = false,
         ascending: Bool = false,
-        batchSize: Int = 20,
-        offset: Int = 0
+        batchSize _: Int = 20,
+        offset _: Int = 0
     ) -> NSFetchRequest<TaskEntity> {
         let request = taskFetchRequest
         var predicates: [NSPredicate] = []
@@ -155,13 +156,19 @@ extension TaskEntity {
             request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         }
 
-        request.sortDescriptors = [
-            NSSortDescriptor(keyPath: \TaskEntity.date, ascending: ascending),
-        ]
+        if hourly {
+            request.sortDescriptors = [
+                NSSortDescriptor(keyPath: \TaskEntity.startTime, ascending: !ascending),
+            ]
+        } else {
+            request.sortDescriptors = [
+                NSSortDescriptor(keyPath: \TaskEntity.date, ascending: ascending),
+            ]
+        }
 
-        request.fetchBatchSize = batchSize
-        request.fetchOffset = offset
-        request.fetchLimit = batchSize
+//        request.fetchBatchSize = batchSize
+//        request.fetchOffset = offset
+//        request.fetchLimit = batchSize
 
         return request
     }
@@ -193,6 +200,14 @@ extension TaskEntity {
 
         request.propertiesToGroupBy = ["status"]
         request.propertiesToFetch = ["status", countExpression]
+
+        return request
+    }
+
+    static func fetchRequestForChartData(for startDate: Date, endDate: Date) -> NSFetchRequest<TaskEntity> {
+        let request = taskFetchRequest
+
+        request.predicate = NSPredicate(format: "date >= %@ AND date <= %@", startDate as NSDate, endDate as NSDate)
 
         return request
     }
@@ -264,7 +279,7 @@ extension TaskEntity {
 }
 
 extension TaskEntity {
-    static func preview(count: Int, in context: NSManagedObjectContext = CoreDataStack.shared.viewContext) {
+    static func preview(count: Int, in context: NSManagedObjectContext = CoreDataStack.shared.viewContext) -> [TaskEntity] {
         var tasks: [TaskEntity] = []
         let tag1 = TagEntity(context: context)
         tag1.name = "Home"
@@ -273,14 +288,18 @@ extension TaskEntity {
         tag2.name = "Office"
         tag2.color = "#ec0661"
 
-        for _ in 0 ..< count {
+        for i in 0 ..< count {
             let task = TaskEntity(context: context)
             task.title = "Task \(tasks.count + 1)"
             task.tDescription = "Description \(tasks.count + 1)"
             task.tags = [tag1, tag2]
+            task.date = Calendar.current.date(byAdding: .day, value: i, to: .init()) ?? Date()
+            task.startTime = Calendar.current.date(byAdding: .hour, value: i, to: .init()) ?? Date()
+            task.endTime = Calendar.current.date(byAdding: .hour, value: i * 2, to: .init()) ?? Date()
             tasks.append(task)
         }
         try? context.save()
+        return tasks
     }
 
     static func oneTask() -> TaskEntity {

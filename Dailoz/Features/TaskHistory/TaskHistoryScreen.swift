@@ -9,25 +9,28 @@ import SwiftUI
 
 struct TaskHistoryScreen: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var refreshManager: UIStateManager
-    @EnvironmentObject private var taskRepository: TaskRepositoryOld
+    @EnvironmentObject var uiStateManager: UIStateManager
     @FetchRequest(fetchRequest: TagEntity.all()) private var tags
+
+    @StateObject var vm = TaskHistoryScreenVM()
 
     let status: TStatus
 
     // MARK: - View UI State
 
-    @State private var navTitle = "Task Overview"
+    @State private var navTitle = ""
     @State private var showDatePicker = false
     @State private var showFilterSheet = true
     @State private var contentUnavailabelText = ""
 
-    @State private var searchFilter = SearchFilter()
+    init(status: TStatus) {
+        self.status = status
+    }
 
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading) {
-                SearchBar(searchFilter: $searchFilter)
+                SearchBar(searchFilter: $vm.searchFilter)
 
                 DateFilterButton()
 
@@ -42,8 +45,9 @@ struct TaskHistoryScreen: View {
         }
         .navigationBarBackButtonHidden(true)
         .onAppear {
+            uiStateManager.showTabBar = false
             navTitle = status.rawValue
-            searchFilter.status = status
+            vm.searchFilter.status = status
             switch status {
             case .completed:
                 contentUnavailabelText = "No completed tasks yet. Keep going!"
@@ -55,17 +59,18 @@ struct TaskHistoryScreen: View {
                 contentUnavailabelText = "No on going tasks yet. Keep going!"
             }
 
-            taskRepository.fetchGroupedTaskByDate(with: searchFilter)
+            vm.fetchTasks(offset: 0)
         }
-        .onChange(of: searchFilter) {
-            taskRepository.fetchGroupedTaskByDate(with: searchFilter, offset: 0)
+        .onChange(of: vm.searchFilter) {
+            vm.fetchTasks(offset: 0)
         }
-        .onChange(of: refreshManager.refreshId) {
-            taskRepository.fetchGroupedTaskByDate(with: searchFilter)
+        .onChange(of: uiStateManager.refreshId) {
+            vm.fetchTasks(offset: 0)
         }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button {
+                    uiStateManager.showTabBar = true
                     dismiss()
                 } label: {
                     Image(systemName: "chevron.backward")
@@ -79,17 +84,16 @@ struct TaskHistoryScreen: View {
 extension TaskHistoryScreen {
     private func DateFilterButton() -> some View {
         Button {
-            searchFilter.isMonthly = true
             showDatePicker.toggle()
         } label: {
-            Label("\(searchFilter.date.format(.MMMMyyyy))", systemImage: "calendar")
+            Label("\(vm.searchFilter.date.format(.MMMMyyyy))", systemImage: "calendar")
                 .font(.robotoM(22))
                 .tint(.textPrimary)
         }
         .padding()
         .sheet(isPresented: $showDatePicker) {
-            DatePicker("", selection: $searchFilter.date, displayedComponents: .date)
-                .datePickerStyle(.graphical)
+            DatePicker("", selection: $vm.searchFilter.date, displayedComponents: .date)
+                .datePickerStyle(.wheel)
                 .padding()
                 .presentationDetents([.medium])
                 .presentationDragIndicator(.visible)
@@ -100,10 +104,10 @@ extension TaskHistoryScreen {
     // TODO: - Need to implement lazy loading tasks from Core Data.
     @ViewBuilder
     private func TaskListByDate() -> some View {
-        let taskListIsEmpty = taskRepository.groupTasks.isEmpty
+        let taskListIsEmpty = vm.tasks.isEmpty
         if !taskListIsEmpty {
-            ForEach(taskRepository.groupTasks.sorted(by: {
-                if searchFilter.sortByDate == .newest {
+            ForEach(vm.tasks.sorted(by: {
+                if vm.searchFilter.sortByDate == .newest {
                     $0.key > $1.key
                 } else {
                     $0.key < $1.key
@@ -112,7 +116,7 @@ extension TaskHistoryScreen {
                 TaskListCell(date: key, tasks: value)
             }
             .overlay {
-                if taskRepository.isFetching {
+                if vm.isLoading {
                     ProgressView()
                         .foregroundStyle(.royalBlue)
                 }
@@ -129,11 +133,12 @@ extension TaskHistoryScreen {
                 ScrollView(.horizontal) {
                     LazyHStack(spacing: 12) {
                         ForEach(tasks) { task in
-                            TaskCard(task: task) {}
+                            TaskCard(task: task)
                                 .frame(width: geometry.size.width * 0.5)
                         }
                     }
                     .scrollTargetLayout()
+                    .animation(.easeIn(duration: 0.3), value: tasks.count)
                 }
                 .scrollIndicators(.hidden)
                 .scrollTargetBehavior(.viewAligned)

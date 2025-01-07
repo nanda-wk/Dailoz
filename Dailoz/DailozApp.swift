@@ -11,6 +11,7 @@ import SwiftUI
 struct DailozApp: App {
     private let coreDataStack = CoreDataStack.shared
     @StateObject private var uiStateManager = UIStateManager()
+    @StateObject private var preferences = UserPreferences()
 
     init() {
         UITabBar.appearance().standardAppearance.configureWithTransparentBackground()
@@ -27,6 +28,7 @@ struct DailozApp: App {
             TabScreen()
                 .environment(\.managedObjectContext, coreDataStack.viewContext)
                 .environmentObject(uiStateManager)
+                .environmentObject(preferences)
         }
     }
 }

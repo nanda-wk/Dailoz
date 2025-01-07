@@ -18,6 +18,7 @@ final class TaskLocalDataSource {
         status: [TStatus] = [],
         monthly: Date? = nil,
         daily: Date? = nil,
+        hourly: Bool = false,
         ascending: Bool = false,
         offset: Int = 0
     ) -> [TaskEntity] {
@@ -28,6 +29,7 @@ final class TaskLocalDataSource {
             status: status,
             monthly: monthly,
             daily: daily,
+            hourly: hourly,
             ascending: ascending,
             offset: offset
         )
@@ -46,7 +48,18 @@ final class TaskLocalDataSource {
             let fetchedResults = try moc.fetch(fetchReqest) as? [[String: Any]]
             return fetchedResults
         } catch {
-            print("failed to fetch task count grouped by status: \(error)")
+            print("Failed to fetch task count grouped by status: \(error)")
+        }
+        return nil
+    }
+
+    func fetchTaskForWeeklyChart(for date: Date, endDate: Date) -> [TaskEntity]? {
+        let fetchRequest = TaskEntity.fetchRequestForChartData(for: date, endDate: endDate)
+        do {
+            let fetchedResults = try moc.fetch(fetchRequest)
+            return fetchedResults
+        } catch {
+            print("Failed to fetch task for weekly chart: \(error)")
         }
         return nil
     }

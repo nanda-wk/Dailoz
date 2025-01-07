@@ -37,7 +37,12 @@ struct SearchBar: View {
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button("Reset") {
+                            var isMonthly = false
+                            if searchFilter.isMonthly {
+                                isMonthly = true
+                            }
                             searchFilter = SearchFilter()
+                            searchFilter.isMonthly = isMonthly
                         }
                         .tint(.royalBlue)
                     }

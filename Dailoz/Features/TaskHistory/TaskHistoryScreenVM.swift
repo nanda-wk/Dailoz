@@ -1,14 +1,14 @@
 //
-//  TaskListScreenVM.swift
+//  TaskHistoryScreenVM.swift
 //  Dailoz
 //
-//  Created by Nanda WK on 2024-12-21.
+//  Created by Nanda WK on 2024-12-22.
 //
 
 import Foundation
 
-final class TaskListScreenVM: ObservableObject {
-    @Published var tasks: [TaskEntity] = []
+final class TaskHistoryScreenVM: ObservableObject {
+    @Published var tasks: [String: [TaskEntity]] = [:]
 
     @Published var searchFilter = SearchFilter()
 
@@ -20,35 +20,39 @@ final class TaskListScreenVM: ObservableObject {
 
     init(taskRepository: TaskRepository = TaskRepository()) {
         self.taskRepository = taskRepository
-        searchFilter.date = .init()
+        searchFilter.isMonthly = true
     }
 
     func fetchTasks(offset: Int? = nil) {
-        var ascending = true
         guard !isLoading else { return }
         isLoading = true
 
         if let offset {
             self.offset = offset
-            tasks = []
+            tasks = [:]
         }
 
-        if searchFilter.sortByDate == .newest {
-            ascending = false
-        } else {
-            ascending = true
+        var statusList: [TStatus] = []
+        if let status = searchFilter.status {
+            statusList.append(status)
         }
 
-        let fetchedTasks = taskRepository.fetchTasks(
+        let fetchedTasks = taskRepository.fetchTasksGroupedByDate(
             text: searchFilter.searchText,
             tags: Array(searchFilter.sortByTags),
             types: Array(searchFilter.sortByType),
-            monthly: searchFilter.isMonthly ? .init() : nil,
-            daily: searchFilter.date,
-            ascending: ascending,
+            status: statusList,
+            monthly: searchFilter.isMonthly ? searchFilter.date : nil,
             offset: self.offset
         )
-        tasks.append(contentsOf: fetchedTasks)
+        for (date, newTasks) in fetchedTasks {
+            if tasks[date] != nil {
+                tasks[date]?.append(contentsOf: newTasks)
+            } else {
+                tasks[date] = newTasks
+            }
+        }
+
         self.offset += fetchedTasks.count
 
         isLoading = false

@@ -24,14 +24,18 @@ struct TaskListScreen: View {
 
                 LazyVStack(spacing: 20) {
                     ForEach(vm.tasks) { task in
-                        TaskCard(task: task) {
-                            vm.onDeleteTask(task)
-                        }
+                        TaskCard(task: task)
                     }
-
-                    CustomProgressView()
                 }
                 .padding()
+                .animation(.easeIn(duration: 0.3), value: vm.tasks.count)
+                .overlay {
+                    if vm.isLoading {
+                        ProgressView()
+                            .foregroundStyle(.royalBlue)
+                            .padding()
+                    }
+                }
             }
 
             Button {
@@ -53,14 +57,14 @@ struct TaskListScreen: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .onAppear {
-            vm.fetchTask(offset: 0)
+            vm.fetchTasks(offset: 0)
             uiStateManager.showTabBar = false
         }
         .onChange(of: vm.searchFilter) {
-            vm.fetchTask(offset: 0)
+            vm.fetchTasks(offset: 0)
         }
         .onChange(of: uiStateManager.refreshId) {
-            vm.fetchTask(offset: 0)
+            vm.fetchTasks(offset: 0)
         }
         .fullScreenCover(isPresented: $showTaskPlanScreen) {
             NavigationStack {
@@ -77,23 +81,6 @@ struct TaskListScreen: View {
                 }
                 .tint(.royalBlue)
             }
-        }
-    }
-}
-
-extension TaskListScreen {
-    @ViewBuilder
-    private func CustomProgressView() -> some View {
-        if vm.isLoading {
-            ProgressView()
-                .foregroundStyle(.royalBlue)
-                .padding()
-        } else {
-            Color.clear
-                .frame(height: 1)
-                .onAppear {
-                    vm.fetchTask()
-                }
         }
     }
 }
