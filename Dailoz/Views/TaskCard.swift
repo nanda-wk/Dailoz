@@ -10,10 +10,7 @@ import SwiftUI
 struct TaskCard: View {
     @EnvironmentObject var refreshManager: UIStateManager
     let task: TaskEntity
-    var onDelete: () -> Void
-    var onEnable: (() -> Void)? = nil
-    var onDisable: (() -> Void)? = nil
-    var onRestore: (() -> Void)? = nil
+    private let vm = TaskCardVM()
 
     @State private var showTaskPlanScreen = false
     @State private var showingAlert = false
@@ -78,28 +75,32 @@ struct TaskCard: View {
     @ViewBuilder
     private func MenuButton() -> some View {
         Menu {
-            if task.statusEnum == .onGoing, let onDisable {
-                Button("Disable", systemImage: "xmark.square") {
-                    onDisable()
+            if task.statusEnum != .onGoing {
+                Button("On Going", systemImage: "rhombus.fill") {
+                    vm.ongoing(task)
+                    refreshManager.triggerRefresh()
                 }
                 .tint(.black)
             }
 
-            if task.statusEnum == .pending, let onEnable {
-                Button("Enable", systemImage: "checkmark.square") {
-                    onEnable()
+            if task.statusEnum != .completed {
+                Button("Complete", systemImage: "checkmark.seal") {
+                    vm.onCompleted(task)
+                    refreshManager.triggerRefresh()
                 }
             }
 
             if task.statusEnum != .completed {
                 Button("Edit", systemImage: "square.and.pencil") {
                     showTaskPlanScreen.toggle()
+                    refreshManager.triggerRefresh()
                 }
             }
 
-            if task.statusEnum == .completed || task.statusEnum == .canceled, let onRestore {
-                Button("Restore", systemImage: "arrow.up.square") {
-                    onRestore()
+            if task.statusEnum != .canceled {
+                Button("Cancel", systemImage: "xmark.seal") {
+                    vm.onCanceled(task)
+                    refreshManager.triggerRefresh()
                 }
             }
 
@@ -120,7 +121,7 @@ struct TaskCard: View {
         }
         .alert("Are you sure?", isPresented: $showingAlert) {
             Button("Delete", role: .destructive) {
-                onDelete()
+                vm.onDelete(task)
                 refreshManager.triggerRefresh()
             }
             Button("Cancel", role: .cancel) {}
@@ -128,7 +129,33 @@ struct TaskCard: View {
     }
 }
 
+private final class TaskCardVM {
+    let taskRepository: TaskRepository
+    init(taskRepository: TaskRepository = TaskRepository()) {
+        self.taskRepository = taskRepository
+    }
+
+    func onDelete(_ task: TaskEntity) {
+        taskRepository.deleteTask(task: task)
+    }
+
+    func onCompleted(_ task: TaskEntity) {
+        task.status = TStatus.completed.rawValue
+        taskRepository.updateTask(task: task)
+    }
+
+    func onCanceled(_ task: TaskEntity) {
+        task.status = TStatus.canceled.rawValue
+        taskRepository.updateTask(task: task)
+    }
+
+    func ongoing(_ task: TaskEntity) {
+        task.status = TStatus.onGoing.rawValue
+        taskRepository.updateTask(task: task)
+    }
+}
+
 #Preview {
-    TaskCard(task: TaskEntity.oneTask(), onDelete: { print("delete") })
+    TaskCard(task: TaskEntity.oneTask())
         .previewEnvironment()
 }

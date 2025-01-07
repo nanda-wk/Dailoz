@@ -12,6 +12,8 @@ enum DateFormat: String {
     case hhmm_a = "hh:mm a"
     case hhmm = "hh:mm"
     case MMMMyyyy = "MMMM yyyy"
+    case E
+    case dd
 }
 
 extension Date {

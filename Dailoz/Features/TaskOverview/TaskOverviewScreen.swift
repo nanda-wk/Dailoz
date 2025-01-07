@@ -8,16 +8,15 @@
 import SwiftUI
 
 struct TaskOverviewScreen: View {
-    @EnvironmentObject private var taskRepository: TaskRepositoryOld
+    @EnvironmentObject var uiStateManager: UIStateManager
+    @StateObject private var vm = TaskOverviewScreenVM()
 
     @State private var showDatePicker = false
-
-    @State private var searchFilter = SearchFilter()
 
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading) {
-                SearchTextField(searchText: $searchFilter.searchText)
+                SearchTextField(searchText: $vm.searchFilter.searchText)
                     .padding()
 
                 WeekDaySection()
@@ -27,14 +26,13 @@ struct TaskOverviewScreen: View {
         }
         .safeAreaInset(edge: .bottom) {
             Spacer()
-                .frame(height: 40)
+                .frame(height: 60)
         }
         .onAppear {
-            searchFilter.isMonthly = true
-            taskRepository.fetchTasks(with: searchFilter, offset: 0)
+            vm.fetchTasks(offset: 0)
         }
-        .onChange(of: searchFilter) {
-            taskRepository.fetchTasks(with: searchFilter, offset: 0)
+        .onChange(of: vm.searchFilter) {
+            vm.fetchTasks(offset: 0)
         }
     }
 }
@@ -42,7 +40,6 @@ struct TaskOverviewScreen: View {
 extension TaskOverviewScreen {
     @ViewBuilder
     private func WeekDaySection() -> some View {
-        let rdm = Int.random(in: 0 ..< 7)
         VStack {
             HStack {
                 Text("Task")
@@ -54,35 +51,18 @@ extension TaskOverviewScreen {
                 Button {
                     showDatePicker.toggle()
                 } label: {
-                    Label("\(searchFilter.date.format(.MMMMyyyy))", systemImage: "calendar")
+                    Label("\(vm.searchFilter.date.format(.MMMMyyyy))", systemImage: "calendar")
                         .font(.robotoR(14))
                         .tint(.textSecondary)
                 }
             }
 
-            LazyHStack {
-                ForEach(0 ..< 7) { index in
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 14)
-                            .fill(index == rdm ? .royalBlue : .clear)
-
-                        VStack(spacing: 10) {
-                            Text("MO")
-                                .font(.robotoM(18))
-
-                            Text("1\(index + 1)")
-                                .font(.robotoR(16))
-                        }
-                        .foregroundStyle(index == rdm ? .white : .textPrimary)
-                        .padding(.vertical)
-                    }
-                    .frame(width: 46)
-                }
-            }
+            WeekSliderView(currentDate: $vm.searchFilter.date)
+                .frame(height: 90)
         }
         .padding()
         .sheet(isPresented: $showDatePicker) {
-            DatePicker("", selection: $searchFilter.date, displayedComponents: .date)
+            DatePicker("", selection: $vm.searchFilter.date, displayedComponents: .date)
                 .datePickerStyle(.graphical)
                 .padding()
                 .presentationDetents([.medium])
@@ -93,10 +73,10 @@ extension TaskOverviewScreen {
 
     @ViewBuilder
     private func TaskGroupedHourSection() -> some View {
-        let today = if Date().format(.dMMMMyyyy) == searchFilter.date.format(.dMMMMyyyy) {
+        let today = if Date().format(.dMMMMyyyy) == vm.searchFilter.date.format(.dMMMMyyyy) {
             "Today"
         } else {
-            searchFilter.date.format(.dMMMMyyyy)
+            vm.searchFilter.date.format(.dMMMMyyyy)
         }
         HStack {
             Text(today)
@@ -111,32 +91,26 @@ extension TaskOverviewScreen {
         }
         .padding(.horizontal)
 
-        ForEach(taskRepository.tasks) { _ in
-            TaskList()
-
-            if taskRepository.isFetching {
-                ProgressView()
-                    .foregroundStyle(.royalBlue)
-                    .padding()
-            } else {
-                Color.clear
-                    .frame(height: 1)
-                    .onAppear {
-                        taskRepository.fetchTasks(with: searchFilter)
-                    }
+        if vm.isLoading {
+            ProgressView()
+                .foregroundStyle(.royalBlue)
+                .padding()
+        } else {
+            ForEach(vm.tasks.sorted(by: { $0.key > $1.key }), id: \.key) { time, tasks in
+                TaskList(time: time, tasks: tasks)
             }
         }
     }
 
     @ViewBuilder
-    private func TaskList() -> some View {
+    private func TaskList(time: String, tasks: [TaskEntity]) -> some View {
         Divider()
             .padding(.horizontal)
             .padding(.vertical, 10)
 
         GeometryReader { geometry in
             HStack {
-                Text("07:00")
+                Text(time)
                     .font(.robotoM(16))
                     .foregroundStyle(.textSecondary)
                     .padding(.leading)
@@ -144,8 +118,8 @@ extension TaskOverviewScreen {
 
                 ScrollView(.horizontal) {
                     LazyHStack(spacing: 12) {
-                        ForEach(taskRepository.tasks) { task in
-                            TaskCard(task: task) {}
+                        ForEach(tasks) { task in
+                            TaskCard(task: task)
                                 .frame(width: geometry.size.width * 0.5)
                         }
                     }

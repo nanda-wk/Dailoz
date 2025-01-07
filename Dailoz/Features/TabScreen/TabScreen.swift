@@ -14,29 +14,23 @@ struct TabScreen: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            Group {
-                switch selected {
-                case .home:
-                    NavigationStack {
-                        HomeScreen()
-                    }
-                case .task:
-                    NavigationStack {
-                        TaskOverviewScreen()
-                    }
-                case .activity:
-                    NavigationStack {
-                        ActivityScreen()
-                    }
-                case .profile:
-                    NavigationStack {
-                        ProfileScreen()
-                    }
+            switch selected {
+            case .home:
+                NavigationStack {
+                    HomeScreen()
                 }
-            }
-            .safeAreaInset(edge: .bottom) {
-                Spacer()
-                    .frame(height: 40)
+            case .task:
+                NavigationStack {
+                    TaskOverviewScreen()
+                }
+            case .activity:
+                NavigationStack {
+                    ActivityScreen()
+                }
+            case .profile:
+                NavigationStack {
+                    ProfileScreen()
+                }
             }
 
             if uiStateManager.showTabBar {

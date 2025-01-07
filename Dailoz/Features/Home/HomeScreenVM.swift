@@ -46,9 +46,4 @@ final class HomeScreenVM: ObservableObject {
         tasks = taskRepository.fetchTasks(daily: .init())
         isLoading = false
     }
-
-    func onDeleteTask(_ task: TaskEntity) {
-        taskRepository.deleteTask(task: task)
-        fetchTask()
-    }
 }
