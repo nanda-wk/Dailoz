@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct ProfileScreen: View {
+    @Environment(\.managedObjectContext) var moc
     @EnvironmentObject var preferences: UserPreferences
+    @State private var showNameEditor = false
 
     var body: some View {
         List {
@@ -19,23 +21,48 @@ struct ProfileScreen: View {
                     .frame(width: 80, height: 80)
                     .clipShape(Circle())
 
-                Text("Nanda")
+                Text(preferences.userName)
                     .font(.robotoB(22))
             }
             .frame(maxWidth: .infinity)
 
-            Picker("Languages", systemImage: "globe", selection: $preferences.appLang) {
-                ForEach(AppLanguage.allCases) { lan in
-                    Text(lan.title)
+            Section {
+                Button {
+                    showNameEditor.toggle()
+                } label: {
+                    Text("Update profile")
                 }
-            }
-            .pickerStyle(.navigationLink)
-            .tint(.royalBlue)
 
-            Toggle("Allow Notifications", systemImage: "bell.badge", isOn: $preferences.allowNotification)
+            } header: {
+                Text("Profile")
+            }
+
+            Section {
+                Picker("Languages", systemImage: "globe", selection: $preferences.appLang) {
+                    ForEach(AppLanguage.allCases) { lan in
+                        Text(lan.title)
+                    }
+                }
+                .pickerStyle(.navigationLink)
                 .tint(.royalBlue)
+
+                Toggle("Allow Notifications", systemImage: "bell.badge", isOn: $preferences.allowNotification)
+                    .tint(.royalBlue)
+            } header: {
+                Text("Setting")
+            }
         }
         .foregroundStyle(.textPrimary)
+        .fullScreenCover(isPresented: $showNameEditor) {
+            NameRegisterScreen()
+        }
+        .onChange(of: preferences.allowNotification) {
+            if preferences.allowNotification {
+                scheduleNotificationsForAllTasks(context: moc)
+            } else {
+                disableAllNotifications()
+            }
+        }
     }
 }
 

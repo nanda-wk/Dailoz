@@ -93,7 +93,6 @@ struct TaskCard: View {
             if task.statusEnum != .completed {
                 Button("Edit", systemImage: "square.and.pencil") {
                     showTaskPlanScreen.toggle()
-                    refreshManager.triggerRefresh()
                 }
             }
 

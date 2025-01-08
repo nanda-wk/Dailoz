@@ -22,4 +22,9 @@ extension Date {
         formatter.dateFormat = format.rawValue
         return formatter.string(from: self)
     }
+
+    func convertedToCurrentTimeZone() -> Date {
+        let timeZoneOffset = TimeZone.current.secondsFromGMT(for: self)
+        return Calendar.current.date(byAdding: .second, value: timeZoneOffset, to: self) ?? self
+    }
 }

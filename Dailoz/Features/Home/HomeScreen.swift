@@ -9,16 +9,17 @@ import SwiftUI
 
 struct HomeScreen: View {
     @EnvironmentObject var uiStateManager: UIStateManager
+    @EnvironmentObject var preferences: UserPreferences
     @StateObject var vm = HomeScreenVM()
 
     var body: some View {
         ScrollView {
             VStack(spacing: 36) {
-                #if targetEnvironment(simulator)
-                    Button("Add 100 Tasks") {
-                        TaskEntity.preview(count: 100)
-                    }
-                #endif
+//                #if targetEnvironment(simulator)
+//                    Button("Add 100 Tasks") {
+//                        TaskEntity.preview(count: 100)
+//                    }
+//                #endif
                 NavBarSection()
 
                 HeroSection()
@@ -35,6 +36,9 @@ struct HomeScreen: View {
         .onChange(of: uiStateManager.refreshId) {
             vm.fetchTask()
         }
+        .fullScreenCover(isPresented: $preferences.isFirstLunch) {
+            NameRegisterScreen()
+        }
         .safeAreaInset(edge: .bottom) {
             Spacer()
                 .frame(height: 80)
@@ -46,7 +50,7 @@ extension HomeScreen {
     private func NavBarSection() -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 12) {
-                Text("Hi, Nanda")
+                Text("Hi, \(preferences.userName)")
                     .font(.robotoB(30))
                     .foregroundStyle(.textPrimary)
 

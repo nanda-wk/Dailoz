@@ -215,15 +215,20 @@ final class TaskRepository {
             tags: tags,
             status: status
         )
+        guard let createdTask else { return nil }
+        scheduleNotification(for: createdTask)
         return createdTask
     }
 
     func updateTask(task: TaskEntity) -> TaskEntity? {
         let updatedTask = localDataSource.update(task: task)
+        guard let updatedTask else { return nil }
+        updateNotification(for: updatedTask)
         return updatedTask
     }
 
     func deleteTask(task: TaskEntity) {
+        removeNotification(for: task)
         localDataSource.delete(task: task)
     }
 
