@@ -50,11 +50,11 @@ extension HomeScreen {
     private func NavBarSection() -> some View {
         HStack {
             VStack(alignment: .leading, spacing: 12) {
-                Text("Hi, \(preferences.userName)")
+                Text("Features.Home.HomeScreen.Greeing.Name \(preferences.userName)")
                     .font(.robotoB(30))
                     .foregroundStyle(.textPrimary)
 
-                Text("Let’s make this day productive")
+                Text("Features.Home.HomeScreen.Greeing.Description")
                     .font(.robotoR(16))
                     .foregroundStyle(.gray)
             }
@@ -73,7 +73,7 @@ extension HomeScreen {
 
     private func HeroSection() -> some View {
         VStack(alignment: .leading) {
-            Text("My Task")
+            Text("Features.Home.HomeScreen.MyTask.Title")
                 .font(.robotoB(26))
                 .foregroundStyle(.textPrimary)
 
@@ -141,7 +141,7 @@ extension HomeScreen {
                     Text(title)
                         .font(.robotoM(18))
 
-                    Text("^[\(count) Task](inflect: true)")
+                    Text("Features.Home.HomeScreen.HeroCard \(count)")
                         .font(.robotoR(16))
                 }
                 .padding()
@@ -157,7 +157,7 @@ extension HomeScreen {
     private func TodayTaskSection() -> some View {
         LazyVStack(spacing: 16) {
             HStack {
-                Text("Today Task")
+                Text("Dailoz.TodayTask.Title")
                     .font(.robotoB(26))
                     .foregroundStyle(.textPrimary)
 
@@ -167,7 +167,7 @@ extension HomeScreen {
                     NavigationLink {
                         TaskListScreen(navTitle: "Today Tasks")
                     } label: {
-                        Text("View all")
+                        Text("Dailoz.ViewAll.Button")
                             .font(.robotoR(14))
                             .foregroundStyle(.textSecondary)
                     }
@@ -182,7 +182,7 @@ extension HomeScreen {
                     TaskCard(task: task)
                 }
             } else {
-                ContentUnavailableView("No tasks scheduled for today.", systemImage: "text.page.badge.magnifyingglass")
+                ContentUnavailableView("Features.Home.HomeScreen.EmptyList.Description", systemImage: "text.page.badge.magnifyingglass")
                     .foregroundStyle(.textPrimary)
             }
         }
@@ -193,6 +193,6 @@ extension HomeScreen {
 #Preview {
     NavigationStack {
         HomeScreen()
-            .previewEnvironment(taskCount: 0)
+            .previewEnvironment()
     }
 }

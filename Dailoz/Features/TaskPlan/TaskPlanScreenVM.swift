@@ -6,10 +6,11 @@
 //
 
 import Foundation
+import SwiftUICore
 
 final class TaskPlanScreenVM: ObservableObject {
-    @Published private(set) var navTitle = "Add Task"
-    @Published private(set) var btnText = "Create"
+    @Published private(set) var navTitle: LocalizedStringKey = "Features.TaskPlan.TaskPlanScreen.Title.Add"
+    @Published private(set) var btnText: LocalizedStringKey = "Features.TaskPlan.TaskPlanScreen.Button.Create"
     @Published private(set) var isDisabled = true
 
     @Published var title = "" {
@@ -39,8 +40,8 @@ final class TaskPlanScreenVM: ObservableObject {
 
     init(task: TaskEntity?, tagRepository: TagRepository = TagRepository(), taskRepository: TaskRepository = TaskRepository()) {
         if let task {
-            navTitle = "Edit Task"
-            btnText = "Update"
+            navTitle = "Features.TaskPlan.TaskPlanScreen.Title.Edit"
+            btnText = "Features.TaskPlan.TaskPlanScreen.Button.Update"
             isDisabled = false
 
             // MARK: - Setup binding.

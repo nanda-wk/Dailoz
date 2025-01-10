@@ -10,16 +10,17 @@ import Foundation
 enum DateFormat: String {
     case dMMMMyyyy = "d MMMM yyyy"
     case hhmm_a = "hh:mm a"
-    case hhmm = "hh:mm"
+    case HHmm = "HH:mm"
     case MMMMyyyy = "MMMM yyyy"
     case E
     case dd
 }
 
 extension Date {
-    func format(_ format: DateFormat) -> String {
+    func format(_ format: DateFormat, language: AppLanguage = .en_US) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = format.rawValue
+        formatter.locale = Locale(identifier: language.rawValue)
         return formatter.string(from: self)
     }
 

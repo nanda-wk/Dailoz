@@ -1,0 +1,917 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "" : {
+      "shouldTranslate" : false
+    },
+    "Dailoz" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dailoz"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dailoz"
+          }
+        }
+      }
+    },
+    "Dailoz.Alert.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you sure?"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ဖျက်မှာ သေချာပြီလား။"
+          }
+        }
+      }
+    },
+    "Dailoz.AskName.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What is your name?"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "သင့်နာမည်ဘယ်လိုခေါ်လဲ။"
+          }
+        }
+      }
+    },
+    "Dailoz.Cancel.Button" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "မလုပ်တော့ပါ"
+          }
+        }
+      }
+    },
+    "Dailoz.Completed.Button" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ပြီးပါပြီ"
+          }
+        }
+      }
+    },
+    "Dailoz.ContentUnavailable.Canceled" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No canceled tasks yet. Keep going!"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ဖျက်သိမ်းလိုက်သော လုပ်ဆောင်စရာများ မရှိသေးပါ။ လုပ်ဆောင်စရာရှိတာ ဆက်လုပ်ပါ!"
+          }
+        }
+      }
+    },
+    "Dailoz.ContentUnavailable.Completed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No completed tasks yet. Keep going!"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ပြီးမြောက်သည့်အလုပ်များ မရှိသေးပါ။ လုပ်ဆောင်စရာရှိတာ ဆက်လုပ်ပါ!"
+          }
+        }
+      }
+    },
+    "Dailoz.ContentUnavailable.OnGoing" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No on going tasks yet. Keep going!"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ဆက်လုပ်ရမယ့် အလုပ်တွေ မရှိသေးပါ။ လုပ်ဆောင်စရာရှိတာ ဆက်လုပ်ပါ!"
+          }
+        }
+      }
+    },
+    "Dailoz.ContentUnavailable.Pending" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No pending tasks right now. Great work!"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ယခု ဆိုင်းငံ့ထားသည့် လုပ်ဆောင်စရာများ မရှိပါ။ လုပ်ဆောင်စရာရှိတာ ဆက်လုပ်ပါ။"
+          }
+        }
+      }
+    },
+    "Dailoz.Date.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ရက်စွဲ"
+          }
+        }
+      }
+    },
+    "Dailoz.Delete.Button" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ဖျက်မည်"
+          }
+        }
+      }
+    },
+    "Dailoz.Edit.Button" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ပြင်ဆင်မည်"
+          }
+        }
+      }
+    },
+    "Dailoz.Feature.Date.Localized %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@"
+          }
+        }
+      }
+    },
+    "Dailoz.LaunchScreen.Description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plan what you will do to be more organized for\\n today, tomorrow and beyond"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ယနေ့၊ မနက်ဖြန်နှင့် ထို့ထက်ပို၍ စည်းစနစ်ကျရန်\\nသင်လုပ်ဆောင်မည့်အရာများကို စီစဉ်ပါ။"
+          }
+        }
+      }
+    },
+    "Dailoz.OnGoing.Button" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On Going"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "လုပ်ဆောင်ဆဲဖြစ်သည်"
+          }
+        }
+      }
+    },
+    "Dailoz.Reset.Button" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reset"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ပြန်လည်သတ်မှတ်ပါ"
+          }
+        }
+      }
+    },
+    "Dailoz.SearchBar.SortBy.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sort by"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "အလိုက်စီပါ"
+          }
+        }
+      }
+    },
+    "Dailoz.SearchBar.SortByTag.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sort by tag"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tag အလိုက်စီပါ"
+          }
+        }
+      }
+    },
+    "Dailoz.SearchBar.SortByType.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sort by type"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "အမျိုးအစားအလိုက်စီပါ"
+          }
+        }
+      }
+    },
+    "Dailoz.SearchField.Placeholder" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search for task"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "လုပ်ဆောင်စရာရှာဖွေပါ"
+          }
+        }
+      }
+    },
+    "Dailoz.Tags.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tags"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tags"
+          }
+        }
+      }
+    },
+    "Dailoz.Task.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Task"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "လုပ်ဆောင်စရာ"
+          }
+        }
+      }
+    },
+    "Dailoz.TaskCount.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Task Count"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "လုပ်ဆောင်စရာအရေအတွက်"
+          }
+        }
+      }
+    },
+    "Dailoz.TaskPerday.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Task Per Day"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "တစ်နေ့တာလုပ်ဆောင်စရာ"
+          }
+        }
+      }
+    },
+    "Dailoz.TaskPlan.TextField.Description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Description"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "အသေးစိတ် ဖော်ပြချက်"
+          }
+        }
+      }
+    },
+    "Dailoz.TaskPlan.TextField.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Title"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "လုပ်ဆောင်စရာ ခေါင်းစဉ်"
+          }
+        }
+      }
+    },
+    "Dailoz.Time.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "အချိန်"
+          }
+        }
+      }
+    },
+    "Dailoz.TodayTask.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Today Task"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ဒီနေ့ လုပ်ဆောင်စရာ"
+          }
+        }
+      }
+    },
+    "Dailoz.Type.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Type"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "လုပ်ဆောင်စရာ အမျိုးအစား"
+          }
+        }
+      }
+    },
+    "Dailoz.UpdateProfile.Button" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update Profile"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ပရိုဖိုင်ကို အပ်ဒိတ်လုပ်ပါ"
+          }
+        }
+      }
+    },
+    "Dailoz.ViewAll.Button" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View All"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "အကုန်ကြည့်မယ်"
+          }
+        }
+      }
+    },
+    "Dailoz.YourActivity.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your Activity"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "သင့်ရဲ့လုပ်ဆောင်ချက် လှုပ်ရှားမှု"
+          }
+        }
+      }
+    },
+    "Features.Activity.ActivityScreen" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activity"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "လှုပ်ရှားမှု"
+          }
+        }
+      }
+    },
+    "Features.Activity.ActivityScreen.Priority" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Priority"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ဦးစားပေး"
+          }
+        }
+      }
+    },
+    "Features.Home.HomeScreen.EmptyList.Description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No tasks scheduled for today."
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ယနေ့အတွက် လုပ်ဆောင်ရန် စီစဉ်ထားခြင်းမရှိပါ။"
+          }
+        }
+      }
+    },
+    "Features.Home.HomeScreen.Greeing.Description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Let’s make this day productive"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ဒီ​နေ့ကို အကျိုးရှိ​အောင်​ လုပ်​​ဆောင်​ကြပါစို့"
+          }
+        }
+      }
+    },
+    "Features.Home.HomeScreen.Greeing.Name %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hi, %@"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "မင်္ဂလာပါ %@"
+          }
+        }
+      }
+    },
+    "Features.Home.HomeScreen.HeroCard %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "^[%lld Task](inflect: true)"
+          }
+        },
+        "my" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld ခုရှိပါသည်"
+                }
+              },
+              "zero" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "မရှိပါ"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Features.Home.HomeScreen.MyTask.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My Task"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ကျွန်ုပ်၏ လုပ်ဆောင်စရာ"
+          }
+        }
+      }
+    },
+    "Features.Profile.ProfileScreen.Language.Picker" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Languages"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ဘာသာစကားများ"
+          }
+        }
+      }
+    },
+    "Features.Profile.ProfileScreen.Notification.Toggle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allow Notifications"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "သတိပေးနှိုးဆော်ချက်များကို ခွင့်ပြုပါ"
+          }
+        }
+      }
+    },
+    "Features.Profile.ProfileScreen.ProfileHeader.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profile"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ကိုယ်ရေးအချက်အလက်"
+          }
+        }
+      }
+    },
+    "Features.Profile.ProfileScreen.SettingHeader.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Setting"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ပြင်ဆင်ချက်"
+          }
+        }
+      }
+    },
+    "Features.TaskDetail.TaskDetailScreen.Description.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Description"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "အသေးစိတ် ဖော်ပြချက်"
+          }
+        }
+      }
+    },
+    "Features.TaskDetail.TaskDetailScreen.Title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Details"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "အသေးစိတ်"
+          }
+        }
+      }
+    },
+    "Features.TaskPlan.TaskPlanScreen.Button.Create" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ဖန်တီးပါ"
+          }
+        }
+      }
+    },
+    "Features.TaskPlan.TaskPlanScreen.Button.Save" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "သိမ်းမယ်"
+          }
+        }
+      }
+    },
+    "Features.TaskPlan.TaskPlanScreen.Button.Update" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "အပ်ဒိတ်ပါ"
+          }
+        }
+      }
+    },
+    "Features.TaskPlan.TaskPlanScreen.TagSection.Button" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+ Add new tag"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+ Tag အသစ်ထည့်ပါ။"
+          }
+        }
+      }
+    },
+    "Features.TaskPlan.TaskPlanScreen.Title.Add" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Task"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "လုပ်ဆောင်စရာ အသစ်ထည့်ပါ"
+          }
+        }
+      }
+    },
+    "Features.TaskPlan.TaskPlanScreen.Title.Edit" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit Task"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "လုပ်ဆောင်စရာကို ပြင်ဆင်ပါ"
+          }
+        }
+      }
+    },
+    "Features.TaskPlan.Views.TagSheet.Name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "နာမည်"
+          }
+        }
+      }
+    },
+    "Features.TaskPlan.Views.TagSheet.TagColor" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tag Color"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tag အရောင်"
+          }
+        }
+      }
+    },
+    "Features.TaskPlan.Views.TagSheet.TagName" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tag Name"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tag အမည်"
+          }
+        }
+      }
+    },
+    "Features.TaskPlan.Views.TagSheet.Title.Add" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Tag"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tag အသစ်ထည့်ပါ"
+          }
+        }
+      }
+    },
+    "Features.TaskPlan.Views.TagSheet.Title.Edit" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit Tag"
+          }
+        },
+        "my" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tag ကို ပြင်ဆင်ပါ"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

@@ -12,15 +12,15 @@ enum AppLanguage: String, CaseIterable, Identifiable {
         rawValue
     }
 
-    case English
-    case Myanmar
+    case en_US
+    case my_MM
 
-    var title: String {
+    func title(_ lang: Self) -> String {
         switch self {
-        case .English:
-            "English"
-        case .Myanmar:
-            "Myanmar"
+        case .en_US:
+                return lang == .en_US ? "English" : "အင်္ဂလိပ်"
+        case .my_MM:
+            return lang == .en_US ? "Myanmar" :"မြန်မာ"
         }
     }
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TaskPlanScreen: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var preferences: UserPreferences
     @EnvironmentObject var refreshManager: UIStateManager
     @FetchRequest(fetchRequest: TagEntity.all()) private var tagList
     @StateObject private var vm: TaskPlanScreenVM
@@ -34,13 +35,13 @@ struct TaskPlanScreen: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 22) {
-                CustomTextField(title: "Title", text: $vm.title)
+                CustomTextField(title: "Dailoz.TaskPlan.TextField.Title", text: $vm.title)
 
                 CustomDatePicker()
 
                 TimeSection()
 
-                CustomTextField(title: "Description", text: $vm.description)
+                CustomTextField(title: "Dailoz.TaskPlan.TextField.Description", text: $vm.description)
 
                 TypeSection()
 
@@ -77,7 +78,7 @@ struct TaskPlanScreen: View {
 }
 
 extension TaskPlanScreen {
-    private func CustomTextField(title: String, text: Binding<String>) -> some View {
+    private func CustomTextField(title: LocalizedStringKey, text: Binding<String>) -> some View {
         VStack(alignment: .leading, spacing: 18) {
             Text(title)
                 .font(.robotoM(16))
@@ -96,12 +97,12 @@ extension TaskPlanScreen {
 
     private func CustomDatePicker() -> some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("Date")
+            Text("Dailoz.Date.Title")
                 .font(.robotoM(16))
                 .foregroundStyle(.textSecondary)
 
             HStack {
-                Text(vm.date.format(.dMMMMyyyy))
+                Text(vm.date.format(.dMMMMyyyy, language: preferences.appLang))
                     .font(.robotoM(18))
                     .foregroundStyle(.textPrimary)
 
@@ -130,7 +131,7 @@ extension TaskPlanScreen {
 
     private func TimeSection() -> some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("Time")
+            Text("Dailoz.Time.Title")
                 .font(.robotoM(16))
                 .foregroundStyle(.textSecondary)
 
@@ -139,7 +140,7 @@ extension TaskPlanScreen {
                     showStartTimePicker.toggle()
                 } label: {
                     VStack {
-                        Text(vm.startTime.format(.hhmm_a))
+                        Text(vm.startTime.format(.HHmm, language: preferences.appLang))
                             .font(.robotoM(18))
                             .foregroundStyle(.textPrimary)
                         Divider()
@@ -162,7 +163,7 @@ extension TaskPlanScreen {
                     showEndTimePicker.toggle()
                 } label: {
                     VStack {
-                        Text(vm.endTime.format(.hhmm_a))
+                        Text(vm.endTime.format(.HHmm, language: preferences.appLang))
                             .font(.robotoM(18))
                             .foregroundStyle(.textPrimary)
                         Divider()
@@ -183,7 +184,7 @@ extension TaskPlanScreen {
 
     private func TypeSection() -> some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("Type")
+            Text("Dailoz.Type.Title")
                 .font(.robotoM(16))
                 .foregroundStyle(.textSecondary)
 
@@ -200,7 +201,7 @@ extension TaskPlanScreen {
     @ViewBuilder
     private func TagsSection() -> some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("Tags")
+            Text("Dailoz.Tags.Title")
                 .font(.robotoM(16))
                 .foregroundStyle(.textSecondary)
 
@@ -211,12 +212,12 @@ extension TaskPlanScreen {
                             vm.toggleTagSelection(tag)
                         }
                         .contextMenu {
-                            Button("Edit", systemImage: "pencil") {
+                            Button("Dailoz.Edit.Button", systemImage: "pencil") {
                                 tagToUpdate = tag
                                 showTagSheet.toggle()
                             }
 
-                            Button("Delete", systemImage: "trash", role: .destructive) {
+                            Button("Dailoz.Delete.Button", systemImage: "trash", role: .destructive) {
                                 vm.deleteTag(for: tag)
                             }
                         }
@@ -228,7 +229,7 @@ extension TaskPlanScreen {
                     tagToUpdate = nil
                     showTagSheet.toggle()
                 } label: {
-                    Text("+ Add new tag")
+                    Text("Features.TaskPlan.TaskPlanScreen.TagSection.Button")
                         .font(.robotoM(14))
                         .foregroundStyle(.royalBlue)
                         .frame(height: 30)

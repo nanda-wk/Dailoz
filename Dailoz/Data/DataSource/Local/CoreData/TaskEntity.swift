@@ -35,9 +35,9 @@ final class TaskEntity: NSManagedObject, Identifiable {
         }
     }
 
-    var timeRange: String {
-        let start = startTime.format(.hhmm)
-        let end = endTime.format(.hhmm)
+    func timeRange(_ lang: AppLanguage) -> String {
+        let start = startTime.format(.HHmm, language: lang)
+        let end = endTime.format(.HHmm, language: lang)
         return "\(start) - \(end)"
     }
 
@@ -302,7 +302,7 @@ extension TaskEntity {
         return tasks
     }
 
-    static func oneTask() -> TaskEntity {
+    static func oneTask(type: TType = .personal, status: TStatus = .pending) -> TaskEntity {
         let context = CoreDataStack.shared.viewContext
         let tag1 = TagEntity(context: context)
         tag1.name = "Home"
@@ -312,9 +312,11 @@ extension TaskEntity {
         tag2.color = "#ec0661"
 
         let task = TaskEntity(context: context)
-        task.title = "Cleaning Clothes"
+        task.title = "Cleaning ClothesCleaning Clothes"
         task.tDescription = "Clean clothes in the closet."
         task.tags = [tag1, tag2]
+        task.type = type.rawValue
+        task.status = status.rawValue
         return task
     }
 }

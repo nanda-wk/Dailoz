@@ -36,7 +36,7 @@ struct SearchBar: View {
                 .padding()
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button("Reset") {
+                        Button("Dailoz.Reset.Button") {
                             var isMonthly = false
                             if searchFilter.isMonthly {
                                 isMonthly = true
@@ -73,7 +73,7 @@ extension SearchBar {
 
     private func SortByTagSection() -> some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Sort by tag")
+            Text("Dailoz.SearchBar.SortByTag.Title")
                 .font(.robotoM(16))
 
             LazyVGrid(columns: columns) {
@@ -90,7 +90,7 @@ extension SearchBar {
 
     private func SortByTypeSection() -> some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Sort by type")
+            Text("Dailoz.SearchBar.SortByType.Title")
                 .font(.robotoM(16))
 
             HStack {
@@ -106,7 +106,7 @@ extension SearchBar {
 
     private func SortByDateSection() -> some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("Sort by")
+            Text("Dailoz.SearchBar.SortBy.Title")
                 .font(.robotoM(16))
 
             HStack {

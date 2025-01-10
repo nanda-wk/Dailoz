@@ -16,6 +16,7 @@ struct DailozApp: App {
     @State private var showLaunchScreen = true
 
     init() {
+        setupAppLanguage()
         UITabBar.appearance().standardAppearance.configureWithTransparentBackground()
 
         let segmentedAppearance = UISegmentedControl.appearance()
@@ -39,20 +40,31 @@ struct DailozApp: App {
                     TabScreen()
                 }
             }
+            .environment(\.locale, .init(identifier: preferences.appLang.rawValue))
             .environment(\.managedObjectContext, coreDataStack.viewContext)
             .environmentObject(uiStateManager)
             .environmentObject(preferences)
             .onAppear {
                 if preferences.isFirstLunch, !preferences.allowNotification {
-                    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, error in
-                        if let error {
-                            print("Error requesting notification permissions: \(error.localizedDescription)")
-                            preferences.allowNotification = false
+                    DispatchQueue.main.async {
+                        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, error in
+                            if let error {
+                                print("Error requesting notification permissions: \(error.localizedDescription)")
+                                preferences.allowNotification = false
+                            }
+                            preferences.allowNotification = true
                         }
-                        preferences.allowNotification = true
                     }
                 }
             }
         }
+    }
+}
+
+extension DailozApp {
+    private func setupAppLanguage() {
+        let systemLanguage = Locale.preferredLanguages.first
+        guard let systemLanguage, let appLanguage = AppLanguage(rawValue: systemLanguage) else { return }
+        preferences.appLang = appLanguage
     }
 }

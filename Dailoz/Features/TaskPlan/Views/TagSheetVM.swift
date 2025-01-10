@@ -10,8 +10,8 @@ import SwiftUI
 final class TagSheetVM: ObservableObject {
     // MARK: - View UI State
 
-    @Published private(set) var navTitle = "Add Tag"
-    @Published private(set) var btnText = "Save"
+    @Published private(set) var navTitle: LocalizedStringKey = "Features.TaskPlan.Views.TagSheet.Title.Add"
+    @Published private(set) var btnText: LocalizedStringKey = "Features.TaskPlan.TaskPlanScreen.Button.Save"
     @Published private(set) var isDisabled = true
 
     // MARK: - View Data State
@@ -34,8 +34,8 @@ final class TagSheetVM: ObservableObject {
 
     init(tag: TagEntity?, tagRepository: TagRepository = TagRepository()) {
         if let tag {
-            navTitle = "Edit Tag"
-            btnText = "Update"
+            navTitle = "Features.TaskPlan.Views.TagSheet.Title.Edit"
+            btnText = "Features.TaskPlan.TaskPlanScreen.Button.Update"
             name = tag.name
             color = Color(hex: tag.color)
         }

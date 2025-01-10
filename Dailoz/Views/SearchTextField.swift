@@ -19,7 +19,7 @@ struct SearchTextField: View {
                 HStack {
                     Image(systemName: "magnifyingglass")
 
-                    TextField("Search for task", text: $searchText)
+                    TextField("Dailoz.SearchField.Placeholder", text: $searchText)
                         .font(.robotoR(16))
                         .foregroundStyle(.textPrimary)
                         .textInputAutocapitalization(.never)

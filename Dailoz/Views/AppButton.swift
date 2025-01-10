@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct AppButton: View {
-    var title: String
+    var title: LocalizedStringKey
     var height: CGFloat = 60
     var cornerRadius: CGFloat = 14
     var isDisabled = false

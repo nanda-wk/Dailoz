@@ -23,7 +23,7 @@ final class TaskOverviewScreenVM: ObservableObject {
         self.taskRepository = taskRepository
     }
 
-    func fetchTasks(offset: Int? = nil) {
+    func fetchTasks(offset: Int? = nil, lang: AppLanguage = .en_US) {
         guard !isLoading else { return }
         isLoading = true
 
@@ -36,7 +36,8 @@ final class TaskOverviewScreenVM: ObservableObject {
             text: searchFilter.searchText,
             date: searchFilter.date,
             hourly: true,
-            offset: self.offset
+            offset: self.offset,
+            lang: lang
         )
         for (date, newTasks) in fetchedTasks {
             if tasks[date] != nil {

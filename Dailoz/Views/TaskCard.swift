@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct TaskCard: View {
+    @EnvironmentObject var preferences: UserPreferences
     @EnvironmentObject var refreshManager: UIStateManager
     let task: TaskEntity
     private let vm = TaskCardVM()
@@ -17,26 +18,35 @@ struct TaskCard: View {
 
     var body: some View {
         if let _ = task.managedObjectContext {
-            ZStack(alignment: .topLeading) {
-                RoundedRectangle(cornerRadius: 18)
-                    .fill(task.bgColor)
+            NavigationLink {
+                TaskDetailScreen(task: task)
+            } label: {
+                ZStack(alignment: .topLeading) {
+                    RoundedRectangle(cornerRadius: 18)
+                        .fill(task.bgColor)
 
-                VStack(alignment: .leading, spacing: 20) {
-                    HStack {
-                        HeaderSection()
+                    VStack(alignment: .leading, spacing: 20) {
+                        HStack {
+                            HeaderSection()
 
-                        Spacer()
+                            Spacer()
 
-                        MenuButton()
-                            .rotationEffect(.degrees(90))
-                            .offset(y: -14)
+                            MenuButton()
+                                .rotationEffect(.degrees(90))
+                                .offset(y: -14)
+                        }
+
+                        TagSection()
                     }
-
-                    TagSection()
+                    .padding()
                 }
-                .padding()
+                .frame(height: 120)
             }
-            .frame(height: 120)
+            .fullScreenCover(isPresented: $showTaskPlanScreen) {
+                NavigationStack {
+                    TaskPlanScreen(task: task)
+                }
+            }
         }
     }
 
@@ -52,7 +62,7 @@ struct TaskCard: View {
                 .font(.robotoM(18))
                 .foregroundStyle(.textPrimary)
 
-            Text(task.timeRange)
+            Text(task.timeRange(preferences.appLang))
                 .font(.robotoR(16))
                 .foregroundStyle(.textSecondary)
         }
@@ -76,7 +86,7 @@ struct TaskCard: View {
     private func MenuButton() -> some View {
         Menu {
             if task.statusEnum != .onGoing {
-                Button("On Going", systemImage: "rhombus.fill") {
+                Button("Dailoz.OnGoing.Button", systemImage: "rhombus.fill") {
                     vm.ongoing(task)
                     refreshManager.triggerRefresh()
                 }
@@ -84,26 +94,26 @@ struct TaskCard: View {
             }
 
             if task.statusEnum != .completed {
-                Button("Complete", systemImage: "checkmark.seal") {
+                Button("Dailoz.Completed.Button", systemImage: "checkmark.seal") {
                     vm.onCompleted(task)
                     refreshManager.triggerRefresh()
                 }
             }
 
             if task.statusEnum != .completed {
-                Button("Edit", systemImage: "square.and.pencil") {
+                Button("Dailoz.Edit.Button", systemImage: "square.and.pencil") {
                     showTaskPlanScreen.toggle()
                 }
             }
 
             if task.statusEnum != .canceled {
-                Button("Cancel", systemImage: "xmark.seal") {
+                Button("Dailoz.Cancel.Button", systemImage: "xmark.seal") {
                     vm.onCanceled(task)
                     refreshManager.triggerRefresh()
                 }
             }
 
-            Button("Delete", systemImage: "trash", role: .destructive) {
+            Button("Dailoz.Delete.Button", systemImage: "trash", role: .destructive) {
                 showingAlert.toggle()
             }
 
@@ -113,17 +123,12 @@ struct TaskCard: View {
                 .frame(width: 24, height: 24)
                 .tint(.black)
         }
-        .fullScreenCover(isPresented: $showTaskPlanScreen) {
-            NavigationStack {
-                TaskPlanScreen(task: task)
-            }
-        }
-        .alert("Are you sure?", isPresented: $showingAlert) {
-            Button("Delete", role: .destructive) {
+        .alert("Dailoz.Alert.Title", isPresented: $showingAlert) {
+            Button("Dailoz.Delete.Button", role: .destructive) {
                 vm.onDelete(task)
                 refreshManager.triggerRefresh()
             }
-            Button("Cancel", role: .cancel) {}
+            Button("Dailoz.Cancel.Button", role: .cancel) {}
         }
     }
 }
@@ -140,21 +145,23 @@ private final class TaskCardVM {
 
     func onCompleted(_ task: TaskEntity) {
         task.status = TStatus.completed.rawValue
-        taskRepository.updateTask(task: task)
+        _ = taskRepository.updateTask(task: task)
     }
 
     func onCanceled(_ task: TaskEntity) {
         task.status = TStatus.canceled.rawValue
-        taskRepository.updateTask(task: task)
+        _ = taskRepository.updateTask(task: task)
     }
 
     func ongoing(_ task: TaskEntity) {
         task.status = TStatus.onGoing.rawValue
-        taskRepository.updateTask(task: task)
+        _ = taskRepository.updateTask(task: task)
     }
 }
 
 #Preview {
-    TaskCard(task: TaskEntity.oneTask())
-        .previewEnvironment()
+    NavigationStack {
+        TaskCard(task: TaskEntity.oneTask())
+            .previewEnvironment()
+    }
 }

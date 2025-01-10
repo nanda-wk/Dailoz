@@ -22,11 +22,11 @@ struct TagSheet: View {
         NavigationStack {
             VStack(spacing: 22) {
                 VStack(alignment: .leading, spacing: 18) {
-                    Text("Name")
+                    Text("Features.TaskPlan.Views.TagSheet.Name")
                         .font(.robotoM(16))
                         .foregroundStyle(.textSecondary)
 
-                    TextField("Tag Name", text: $vm.name)
+                    TextField("Features.TaskPlan.Views.TagSheet.TagName", text: $vm.name)
                         .font(.robotoM(18))
                         .foregroundStyle(.textPrimary)
                         .textInputAutocapitalization(.never)
@@ -37,7 +37,7 @@ struct TagSheet: View {
                 }
 
                 ColorPicker(selection: $vm.color) {
-                    Text("Tag Color")
+                    Text("Features.TaskPlan.Views.TagSheet.TagColor")
                         .font(.robotoM(16))
                         .foregroundStyle(.textSecondary)
                 }
@@ -49,7 +49,7 @@ struct TagSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") {
+                    Button("Dailoz.Cancel.Button") {
                         dismiss()
                     }
                     .tint(.royalBlue)

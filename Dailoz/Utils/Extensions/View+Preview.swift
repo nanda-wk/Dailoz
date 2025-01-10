@@ -9,9 +9,15 @@ import SwiftUI
 
 @MainActor
 extension View {
-    func previewEnvironment(taskCount _: Int = 7, tagCount _: Int = 5) -> some View {
-        environment(\.managedObjectContext, CoreDataStack.shared.viewContext)
+    func previewEnvironment(
+        userName: String = "Nanda",
+        language: AppLanguage = .en_US
+    ) -> some View {
+        let preferences = UserPreferences()
+        preferences.userName = userName
+        preferences.appLang = language
+        return environment(\.managedObjectContext, CoreDataStack.shared.viewContext)
             .environmentObject(UIStateManager())
-            .environmentObject(UserPreferences())
+            .environmentObject(preferences)
     }
 }

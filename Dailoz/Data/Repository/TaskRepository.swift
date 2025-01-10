@@ -86,7 +86,8 @@ final class TaskRepository {
         text: String = "",
         date: Date? = nil,
         hourly: Bool = false,
-        offset: Int = 0
+        offset: Int = 0,
+        lang: AppLanguage = .en_US
     ) -> [String: [TaskEntity]] {
         var result: [String: [TaskEntity]] = [:]
         let tasks = localDataSource.fetchTasks(
@@ -98,13 +99,13 @@ final class TaskRepository {
         let calendar = Calendar.current
         result = Dictionary(grouping: tasks) { task -> String in
             let startOfHour = calendar.dateInterval(of: .hour, for: task.startTime)?.start
-            return startOfHour?.format(.hhmm) ?? task.startTime.format(.hhmm)
+            return startOfHour?.format(.HHmm, language: lang) ?? task.startTime.format(.HHmm, language: lang)
         }
 
         return result
     }
 
-    func fetchTasksForWeeklyChart(for date: Date) -> [ChartData] {
+    func fetchTasksForWeeklyChart(for date: Date, lang: AppLanguage) -> [ChartData] {
         var results: [ChartData] = []
         let calendar = Calendar.current
         guard let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: date)?.start else {
@@ -138,13 +139,14 @@ final class TaskRepository {
                 }
             }
         }
-
+        
         for weekday in Weekday.allCases {
             if let typecounts = groupedData[weekday] {
+                let day = weekday.localized(lang)
                 let appendCount = [
-                    ChartData(date: String(weekday.rawValue.prefix(3)), type: .personal, count: typecounts.personal),
-                    ChartData(date: String(weekday.rawValue.prefix(3)), type: .secret, count: typecounts.secret),
-                    ChartData(date: String(weekday.rawValue.prefix(3)), type: .tPrivate, count: typecounts.tPrivate),
+                    ChartData(date: day, type: .personal, count: typecounts.personal),
+                    ChartData(date: day, type: .secret, count: typecounts.secret),
+                    ChartData(date: day, type: .tPrivate, count: typecounts.tPrivate),
                 ]
                 results.append(contentsOf: appendCount)
             }
@@ -153,7 +155,7 @@ final class TaskRepository {
         return results
     }
 
-    func fetchTasksForPrevious12Days(from date: Date) -> [ChartData] {
+    func fetchTasksForPrevious12Days(from date: Date, lang: AppLanguage) -> [ChartData] {
         var results: [ChartData] = []
         let calendar = Calendar.current
 
@@ -161,7 +163,7 @@ final class TaskRepository {
 
         var groupedData: [String: TaskTypeCounts] = [:]
         for day in previous12Days {
-            let formatedDay = day.format(.dd)
+            let formatedDay = day.format(.dd, language: lang)
             groupedData[formatedDay] = TaskTypeCounts()
         }
 
@@ -172,17 +174,17 @@ final class TaskRepository {
         for task in tasks {
             switch task.typeEnum {
             case .personal:
-                groupedData[task.date.format(.dd)]?.personal += 1
+                groupedData[task.date.format(.dd, language: lang)]?.personal += 1
             case .tPrivate:
-                groupedData[task.date.format(.dd)]?.tPrivate += 1
+                groupedData[task.date.format(.dd, language: lang)]?.tPrivate += 1
             case .secret:
-                groupedData[task.date.format(.dd)]?.secret += 1
+                groupedData[task.date.format(.dd, language: lang)]?.secret += 1
             }
         }
 
         for date in previous12Days.sorted() {
-            if let typeCounts = groupedData[date.format(.dd)] {
-                let formattedDate = date.format(.dd)
+            if let typeCounts = groupedData[date.format(.dd, language: lang)] {
+                let formattedDate = date.format(.dd, language: lang)
                 let appendData = [
                     ChartData(date: formattedDate, type: .personal, count: typeCounts.personal),
                     ChartData(date: formattedDate, type: .secret, count: typeCounts.secret),
@@ -234,6 +236,25 @@ final class TaskRepository {
 
     private enum Weekday: String, CaseIterable {
         case Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday
+
+        func localized(_ lang: AppLanguage) -> String {
+            switch self {
+                case .Sunday:
+                    lang == .en_US ? "Sun" : "နွေ"
+                case .Monday:
+                    lang == .en_US ? "Mon" : "လာ"
+                case .Tuesday:
+                    lang == .en_US ? "Tue" : "ဂါ"
+                case .Wednesday:
+                    lang == .en_US ? "Wed" : "ဟူး"
+                case .Thursday:
+                    lang == .en_US ? "Thu" : "တေး"
+                case .Friday:
+                    lang == .en_US ? "Fri" : "ကြာ"
+                case .Saturday:
+                    lang == .en_US ? "Sat" : "နေ"
+            }
+        }
     }
 
     private struct TaskTypeCounts {

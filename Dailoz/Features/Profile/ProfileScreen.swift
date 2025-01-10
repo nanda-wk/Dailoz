@@ -12,6 +12,7 @@ struct ProfileScreen: View {
     @EnvironmentObject var preferences: UserPreferences
     @State private var showNameEditor = false
 
+
     var body: some View {
         List {
             VStack {
@@ -30,27 +31,32 @@ struct ProfileScreen: View {
                 Button {
                     showNameEditor.toggle()
                 } label: {
-                    Text("Update profile")
+                    Text("Dailoz.UpdateProfile.Button")
                 }
 
             } header: {
-                Text("Profile")
+                Text("Features.Profile.ProfileScreen.ProfileHeader.Title")
             }
 
             Section {
-                Picker("Languages", systemImage: "globe", selection: $preferences.appLang) {
+                Picker("Features.Profile.ProfileScreen.Language.Picker", systemImage: "globe", selection: $preferences.appLang) {
                     ForEach(AppLanguage.allCases) { lan in
-                        Text(lan.title)
+                        Text(lan.title(preferences.appLang))
+                            .tag(lan)
                     }
                 }
                 .pickerStyle(.navigationLink)
                 .tint(.royalBlue)
 
-                Toggle("Allow Notifications", systemImage: "bell.badge", isOn: $preferences.allowNotification)
+                Toggle("Features.Profile.ProfileScreen.Notification.Toggle", systemImage: "bell.badge", isOn: $preferences.allowNotification)
                     .tint(.royalBlue)
             } header: {
-                Text("Setting")
+                Text("Features.Profile.ProfileScreen.SettingHeader.Title")
             }
+        }
+        .safeAreaInset(edge: .bottom) {
+            Spacer()
+                .frame(height: 80)
         }
         .foregroundStyle(.textPrimary)
         .fullScreenCover(isPresented: $showNameEditor) {
@@ -62,6 +68,9 @@ struct ProfileScreen: View {
             } else {
                 disableAllNotifications()
             }
+        }
+        .onChange(of: preferences.appLang) { _, _ in
+            preferences.setLanguage()
         }
     }
 }

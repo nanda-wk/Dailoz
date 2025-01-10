@@ -30,7 +30,7 @@ struct LaunchScreen: View {
                         .frame(width: 8, height: 8)
                 }
 
-                Text("Plan what you will do to be more organized for\n today, tomorrow and beyond")
+                Text("Dailoz.LaunchScreen.Description")
                     .font(.robotoR(16))
                     .foregroundStyle(.textSecondary)
                     .multilineTextAlignment(.center)

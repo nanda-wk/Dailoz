@@ -9,6 +9,7 @@ import Charts
 import SwiftUI
 
 struct ActivityScreen: View {
+    @EnvironmentObject var preferences: UserPreferences
     @EnvironmentObject var uiStateManager: UIStateManager
     @StateObject private var vm = ActivityScreenVM()
 
@@ -17,7 +18,7 @@ struct ActivityScreen: View {
             VStack(spacing: 26) {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
-                        Text("Priority")
+                        Text("Features.Activity.ActivityScreen.Priority")
                             .font(.robotoB(22))
                             .foregroundStyle(.textPrimary)
 
@@ -36,14 +37,14 @@ struct ActivityScreen: View {
                         }
                     }
 
-                    Text("Task Perday")
+                    Text("Dailoz.TaskPerday.Title")
                         .font(.robotoR(16))
                         .foregroundStyle(.textSecondary)
 
                     Chart(vm.weklyData) { data in
                         PointMark(
-                            x: .value("Date", data.date),
-                            y: .value("Task Count", data.count)
+                            x: .value("Dailoz.Date.Title", data.date),
+                            y: .value("Dailoz.TaskCount.Title", data.count)
                         )
                         .symbol {
                             Image(systemName: "circle.fill")
@@ -58,14 +59,14 @@ struct ActivityScreen: View {
                 .clipShape(.rect(cornerRadius: 16))
 
                 VStack(alignment: .leading, spacing: 20) {
-                    Text("Your Activity")
+                    Text("Dailoz.YourActivity.Title")
                         .font(.robotoB(22))
                         .foregroundStyle(.textSecondary)
 
                     Chart(vm.previous12DaysData) { data in
                         BarMark(
-                            x: .value("Date", data.date),
-                            y: .value("Task Count", data.count)
+                            x: .value("Dailoz.Date.Title", data.date),
+                            y: .value("Dailoz.TaskCount.Title", data.count)
                         )
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                         .foregroundStyle(data.type.color)
@@ -77,15 +78,15 @@ struct ActivityScreen: View {
                 }
             }
             .padding()
-            .navigationTitle("Activity")
+            .navigationTitle("Features.Activity.ActivityScreen")
             .navigationBarTitleDisplayMode(.inline)
         }
         .id(uiStateManager.refreshId)
         .onAppear {
-            vm.fetchData()
+            vm.fetchData(lang: preferences.appLang)
         }
         .onChange(of: uiStateManager.refreshId) {
-            vm.fetchData()
+            vm.fetchData(lang: preferences.appLang)
         }
         .safeAreaInset(edge: .bottom) {
             Spacer()

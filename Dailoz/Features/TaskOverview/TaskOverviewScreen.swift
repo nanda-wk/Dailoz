@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TaskOverviewScreen: View {
     @EnvironmentObject var uiStateManager: UIStateManager
+    @EnvironmentObject var preferences: UserPreferences
     @StateObject private var vm = TaskOverviewScreenVM()
 
     @State private var showDatePicker = false
@@ -26,13 +27,16 @@ struct TaskOverviewScreen: View {
         }
         .safeAreaInset(edge: .bottom) {
             Spacer()
-                .frame(height: 60)
+                .frame(height: 100)
         }
         .onAppear {
-            vm.fetchTasks(offset: 0)
+            vm.fetchTasks(offset: 0, lang: preferences.appLang)
         }
         .onChange(of: vm.searchFilter) {
-            vm.fetchTasks(offset: 0)
+            vm.fetchTasks(offset: 0, lang: preferences.appLang)
+        }
+        .onChange(of: uiStateManager.refreshId) {
+            vm.fetchTasks(offset: 0, lang: preferences.appLang)
         }
     }
 }
@@ -42,7 +46,7 @@ extension TaskOverviewScreen {
     private func WeekDaySection() -> some View {
         VStack {
             HStack {
-                Text("Task")
+                Text("Dailoz.Task.Title")
                     .font(.robotoB(26))
                     .foregroundStyle(.textPrimary)
 
@@ -51,7 +55,7 @@ extension TaskOverviewScreen {
                 Button {
                     showDatePicker.toggle()
                 } label: {
-                    Label("\(vm.searchFilter.date.format(.MMMMyyyy))", systemImage: "calendar")
+                    Label("Dailoz.Feature.Date.Localized \(vm.searchFilter.date.format(.MMMMyyyy, language: preferences.appLang))", systemImage: "calendar")
                         .font(.robotoR(14))
                         .tint(.textSecondary)
                 }
@@ -74,9 +78,9 @@ extension TaskOverviewScreen {
     @ViewBuilder
     private func TaskGroupedHourSection() -> some View {
         let today = if Date().format(.dMMMMyyyy) == vm.searchFilter.date.format(.dMMMMyyyy) {
-            "Today"
+            preferences.appLang == .en_US ? "Today" : "ဒီနေ့"
         } else {
-            vm.searchFilter.date.format(.dMMMMyyyy)
+            vm.searchFilter.date.format(.dMMMMyyyy, language: preferences.appLang)
         }
         HStack {
             Text(today)
@@ -85,7 +89,7 @@ extension TaskOverviewScreen {
 
             Spacer()
 
-            Text(Date().format(.hhmm_a))
+            Text(Date().format(.hhmm_a, language: preferences.appLang))
                 .font(.robotoR(16))
                 .foregroundStyle(.black)
         }
@@ -137,6 +141,6 @@ extension TaskOverviewScreen {
 #Preview {
     NavigationStack {
         TaskOverviewScreen()
-            .previewEnvironment()
+            .previewEnvironment(language: .my_MM)
     }
 }

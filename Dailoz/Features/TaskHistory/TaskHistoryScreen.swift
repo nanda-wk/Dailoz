@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TaskHistoryScreen: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject var preferences: UserPreferences
     @EnvironmentObject var uiStateManager: UIStateManager
     @FetchRequest(fetchRequest: TagEntity.all()) private var tags
 
@@ -21,7 +22,7 @@ struct TaskHistoryScreen: View {
     @State private var navTitle = ""
     @State private var showDatePicker = false
     @State private var showFilterSheet = true
-    @State private var contentUnavailabelText = ""
+    @State private var contentUnavailabelText: LocalizedStringKey = ""
 
     init(status: TStatus) {
         self.status = status
@@ -49,14 +50,14 @@ struct TaskHistoryScreen: View {
             navTitle = status.rawValue
             vm.searchFilter.status = status
             switch status {
-            case .completed:
-                contentUnavailabelText = "No completed tasks yet. Keep going!"
-            case .pending:
-                contentUnavailabelText = "No pending tasks right now. Great work!"
-            case .canceled:
-                contentUnavailabelText = "No canceled tasks yet. Keep going!"
-            case .onGoing:
-                contentUnavailabelText = "No on going tasks yet. Keep going!"
+                case .completed:
+                    contentUnavailabelText = "Dailoz.ContentUnavailable.Completed"
+                case .pending:
+                    contentUnavailabelText = "Dailoz.ContentUnavailable.Pending"
+                case .canceled:
+                    contentUnavailabelText = "Dailoz.ContentUnavailable.Canceled"
+                case .onGoing:
+                    contentUnavailabelText = "Dailoz.ContentUnavailable.OnGoing"
             }
 
             vm.fetchTasks(offset: 0)
@@ -86,7 +87,7 @@ extension TaskHistoryScreen {
         Button {
             showDatePicker.toggle()
         } label: {
-            Label("\(vm.searchFilter.date.format(.MMMMyyyy))", systemImage: "calendar")
+            Label("Dailoz.Feature.Date.Localized \(vm.searchFilter.date.format(.MMMMyyyy, language: preferences.appLang))", systemImage: "calendar")
                 .font(.robotoM(22))
                 .tint(.textPrimary)
         }

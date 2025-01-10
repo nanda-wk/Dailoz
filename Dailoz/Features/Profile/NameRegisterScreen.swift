@@ -33,7 +33,7 @@ struct NameRegisterScreen: View {
             Spacer()
 
             VStack(alignment: .leading, spacing: 18) {
-                Text("What is your name?")
+                Text("Dailoz.AskName.Title")
                     .font(.robotoM(16))
                     .foregroundStyle(.textSecondary)
 
@@ -58,7 +58,7 @@ struct NameRegisterScreen: View {
                 preferences.isFirstLunch = false
                 dismiss()
             } label: {
-                AppButton(title: "Save", isDisabled: preferences.userName.isEmpty)
+                AppButton(title: "Features.TaskPlan.TaskPlanScreen.Button.Save", isDisabled: preferences.userName.isEmpty)
             }
             .disabled(preferences.userName.isEmpty)
         }

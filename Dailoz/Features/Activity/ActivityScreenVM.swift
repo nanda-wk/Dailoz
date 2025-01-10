@@ -20,16 +20,16 @@ final class ActivityScreenVM: ObservableObject {
         self.taskRepository = taskRepository
     }
 
-    func fetchData() {
+    func fetchData(lang: AppLanguage = .en_US) {
         guard !isLoading else { return }
         isLoading = true
 
         withAnimation(.bouncy) {
-            self.weklyData = taskRepository.fetchTasksForWeeklyChart(for: .init())
+            self.weklyData = taskRepository.fetchTasksForWeeklyChart(for: .init(), lang: lang)
         }
 
         withAnimation(.bouncy) {
-            self.previous12DaysData = taskRepository.fetchTasksForPrevious12Days(from: .init())
+            self.previous12DaysData = taskRepository.fetchTasksForPrevious12Days(from: .init(), lang: lang)
         }
 
         isLoading = false

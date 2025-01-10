@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct WeekSliderView: View {
+    @EnvironmentObject var preferences: UserPreferences
     @Binding var currentDate: Date
     @State private var weekSlider: [[Date.Weekday]] = []
     @State private var currentWeekIndex = 1
@@ -42,10 +43,10 @@ struct WeekSliderView: View {
                         .fill(isSameDate(day.date, currentDate) ? .royalBlue : .clear)
 
                     VStack(spacing: 10) {
-                        Text(day.date.format(.E))
-                            .font(.robotoM(18))
+                        Text(day.date.format(.E, language: preferences.appLang))
+                            .font(.robotoM(preferences.appLang == .en_US ? 18 : 10))
 
-                        Text(day.date.format(.dd))
+                        Text(day.date.format(.dd, language: preferences.appLang))
                             .font(.robotoM(16))
                     }
                     .foregroundStyle(isSameDate(day.date, currentDate) ? .white : .textPrimary)
@@ -121,4 +122,5 @@ extension Date {
 #Preview {
     @Previewable @State var currentDate: Date = .init()
     WeekSliderView(currentDate: $currentDate)
+        .previewEnvironment(language: .my_MM)
 }
