@@ -281,18 +281,28 @@ extension TaskEntity {
 extension TaskEntity {
     static func preview(count: Int, in context: NSManagedObjectContext = CoreDataStack.shared.viewContext) -> [TaskEntity] {
         var tasks: [TaskEntity] = []
-        let tag1 = TagEntity(context: context)
-        tag1.name = "Home"
-        tag1.color = "#11b9ac"
-        let tag2 = TagEntity(context: context)
-        tag2.name = "Office"
-        tag2.color = "#ec0661"
+        let tags = ["Urgent", "Work", "Health", "Finance"]
+        let colors = ["#E74C3C", "#3498DB", "#2ECC71", "#F1C40F"]
+
+//        let tagset = Set(tags.prefix(Int.random(in: 1...tags.count)).map { tagName -> TagEntity in
+//            let tag = TagEntity(context: context)
+//            tag.name = tagName
+//            tag.color = colors.randomElement() ?? "Gray"
+//            return tag
+//        })
+
+        let tagset = Set(tags.map { tagName -> TagEntity in
+            let tag = TagEntity(context: context)
+            tag.name = tagName
+            tag.color = colors.randomElement() ?? "Gray"
+            return tag
+        })
 
         for i in 0 ..< count {
             let task = TaskEntity(context: context)
             task.title = "Task \(tasks.count + 1)"
             task.tDescription = "Description \(tasks.count + 1)"
-            task.tags = [tag1, tag2]
+            task.tags = [tagset.randomElement()!, tagset.randomElement()!]
             task.date = Calendar.current.date(byAdding: .day, value: i, to: .init()) ?? Date()
             task.startTime = Calendar.current.date(byAdding: .hour, value: i, to: .init()) ?? Date()
             task.endTime = Calendar.current.date(byAdding: .hour, value: i * 2, to: .init()) ?? Date()
@@ -319,4 +329,125 @@ extension TaskEntity {
         task.status = status.rawValue
         return task
     }
+
+    static func makeDummy(context: NSManagedObjectContext = CoreDataStack.shared.viewContext) {
+        let calendar = Calendar.current
+        let repo = TagRepository()
+
+        let taskTitlesAndDescriptions: [String: [(title: String, description: String)]] = [
+            "Personal": [
+                ("Read a Self-Help Book", "Spend 30 minutes reading a book that inspires growth."),
+                ("Practice Daily Affirmations", "Write or repeat three positive affirmations."),
+                ("Meditate for 10 Minutes", "Relax and clear your mind to reduce stress."),
+                ("Plan Your Week", "Create a weekly schedule with clear goals."),
+                ("Write in Your Journal", "Reflect on your day's events and emotions."),
+                ("Run 3 Miles", "Build stamina by jogging or running outdoors."),
+                ("Morning Yoga", "Start your day with a refreshing 20-minute yoga session."),
+                ("Go for a Nature Walk", "Enjoy a peaceful walk in a nearby park or forest."),
+                ("Declutter Your Workspace", "Organize your desk for better productivity."),
+                ("Track Your Daily Habits", "Use a tracker to monitor water intake, sleep, or exercise."),
+                ("Set Monthly Goals", "Write down your main objectives for this month."),
+                ("Cook a New Recipe", "Try your hand at cooking something new."),
+                ("Hydrate Properly", "Drink at least 8 glasses of water today."),
+                ("Stretch for 15 Minutes", "Perform light stretches to ease tension."),
+                ("Learn a New Skill", "Spend an hour learning a new skill online."),
+                ("Read Fiction", "Escape into a fictional world by reading a novel."),
+                ("Organize Your Closet", "Sort and arrange your clothing items neatly."),
+                ("Plan a Personal Project", "Sketch out ideas for a creative or personal project."),
+                ("Reflect on Gratitude", "Write down three things you're grateful for."),
+                ("Take a Day Off", "Allow yourself a full day of rest and relaxation."),
+            ],
+            "Private": [
+                ("Plan Your Week", "Create a weekly schedule with goals."),
+                ("Declutter Your Desk", "Organize your workspace for better focus."),
+                ("Organize Your Files", "Sort and back up your digital documents."),
+                ("Draft a Personal Letter", "Write a heartfelt letter to a loved one."),
+                ("Review Monthly Expenses", "Analyze your spending for the past month."),
+                ("Backup Your Data", "Ensure all your important files are securely backed up."),
+                ("Create a Vision Board", "Design a visual representation of your goals."),
+                ("Write Down Future Plans", "Sketch out plans for the next 5 years."),
+                ("Set Up a Study Corner", "Arrange a dedicated study or work area."),
+                ("Take a Tech-Free Hour", "Spend an hour without using any gadgets."),
+                ("Sort Old Photos", "Organize and relive old photo memories."),
+                ("Learn a New Language", "Spend 30 minutes on a language learning app."),
+                ("Read a Motivational Blog", "Find and read a blog that inspires personal growth."),
+                ("Organize a Family Album", "Compile photos into a physical or digital album."),
+                ("Clean Your Email Inbox", "Delete unwanted emails and organize folders."),
+                ("Revisit Childhood Hobbies", "Try something you enjoyed doing as a kid."),
+                ("Write a Thank-You Note", "Express gratitude to someone special."),
+                ("Do a Social Media Detox", "Take a break from all social media platforms."),
+                ("Plan a Staycation", "Organize a relaxing day at home with minimal distractions."),
+                ("Do a Digital Detox", "Spend time without any devices for a set period."),
+            ],
+            "Secret": [
+                ("Create a Budget", "Set your financial goals and track expenses."),
+                ("Track Your Spending", "Review and categorize your transactions."),
+                ("Start an Emergency Fund", "Set aside money for unexpected situations."),
+                ("Research Investment Options", "Explore stocks, bonds, or mutual funds."),
+                ("Create a Will", "Draft a will to ensure your assets are managed."),
+                ("Secure Important Documents", "Organize and store key legal and financial files."),
+                ("Set Financial Milestones", "Define major goals, such as buying a home or car."),
+                ("Develop a Savings Plan", "Plan how to save for long-term goals."),
+                ("Review Your Insurance Policy", "Understand your coverage and update if necessary."),
+                ("Automate Bill Payments", "Set up automatic payments for monthly bills."),
+                ("Review Tax Deductions", "Look into potential tax benefits you may qualify for."),
+                ("Plan a Charitable Donation", "Decide on a cause to contribute to this year."),
+                ("Review Your Credit Score", "Check your credit score and find ways to improve it."),
+                ("Cancel Unused Subscriptions", "Save money by eliminating unused services."),
+                ("Set Up Two-Factor Authentication", "Add an extra layer of security to your accounts."),
+                ("Protect Your Privacy Online", "Review your digital footprint and secure accounts."),
+                ("Learn About Passive Income", "Research ways to generate income streams."),
+                ("Write Down Confidential Thoughts", "Use a journal to record private reflections."),
+                ("Reorganize a Secret Folder", "Sort and encrypt sensitive personal documents."),
+                ("Plan a Secret Vacation", "Research and plan a getaway just for yourself."),
+            ],
+        ]
+
+        let statuses: [TStatus] = [.pending, .completed, .canceled, .onGoing]
+        let tags = ["Urgent", "Work", "Health", "Finance"]
+        let colors = ["#E74C3C", "#3498DB", "#2ECC71", "#F1C40F"]
+
+        // Assign tags.
+        let tagSet = kk ? Set(tags.prefix(Int.random(in: 1 ... tags.count)).map { tagName -> TagEntity in
+            let tag = TagEntity(context: context)
+            tag.name = tagName
+            tag.color = colors.randomElement() ?? "Gray"
+            return tag
+        }) : Set(repo.fetchTags())
+
+        if kk {
+            kk.toggle()
+        }
+
+        for (type, tasks) in taskTitlesAndDescriptions {
+            for i in 0 ..< 20 {
+                let task = TaskEntity(context: context)
+
+                let titleDescription = tasks[i % tasks.count]
+                task.title = titleDescription.title
+                task.tDescription = titleDescription.description
+                // Assign a random date in the past or future.
+                let randomDayOffset = Int.random(in: -10 ... 10)
+                let randomDate = calendar.date(byAdding: .day, value: randomDayOffset, to: Date())!
+
+                // Assign start and end times with 1-3 hours difference.
+                let startTime = calendar.date(bySettingHour: Int.random(in: 8 ... 18), minute: 0, second: 0, of: randomDate)!
+                let endTime = calendar.date(byAdding: .hour, value: Int.random(in: 1 ... 3), to: startTime)!
+
+                task.date = randomDate
+                task.startTime = startTime
+                task.endTime = endTime
+
+                task.type = type
+                task.status = statuses.randomElement()?.rawValue ?? TStatus.pending.rawValue
+
+                task.tags = Set(Array(tagSet.shuffled().prefix(2)))
+            }
+        }
+
+        try? context.save()
+        print("Dummy Data Created")
+    }
 }
+
+var kk = true

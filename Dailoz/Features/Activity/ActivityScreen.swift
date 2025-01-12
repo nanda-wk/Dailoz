@@ -95,15 +95,6 @@ struct ActivityScreen: View {
     }
 }
 
-struct Insect: Identifiable {
-    var id = UUID()
-    let name: String
-    let family: String
-    let wingLength: Double
-    let wingWidth: Double
-    let weight: Double
-}
-
 #Preview {
     NavigationStack {
         ActivityScreen()

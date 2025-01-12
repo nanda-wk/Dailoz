@@ -11,13 +11,14 @@ struct HomeScreen: View {
     @EnvironmentObject var uiStateManager: UIStateManager
     @EnvironmentObject var preferences: UserPreferences
     @StateObject var vm = HomeScreenVM()
+    @AppStorage("selectedTab") var selected: TabItem = .home
 
     var body: some View {
         ScrollView {
             VStack(spacing: 36) {
 //                #if targetEnvironment(simulator)
 //                    Button("Add 100 Tasks") {
-//                        TaskEntity.preview(count: 100)
+//                        TaskEntity.makeDummy()
 //                    }
 //                #endif
                 NavBarSection()
@@ -61,7 +62,9 @@ extension HomeScreen {
 
             Spacer()
 
-            Button {} label: {
+            Button {
+                selected = .profile
+            } label: {
                 Image(.avatarDummy)
                     .resizable()
                     .aspectRatio(contentMode: .fit)

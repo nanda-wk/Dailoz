@@ -4,6 +4,9 @@
     "" : {
       "shouldTranslate" : false
     },
+    "Aknowledgement" : {
+
+    },
     "Dailoz" : {
       "localizations" : {
         "en" : {
@@ -515,6 +518,9 @@
           }
         }
       }
+    },
+    "Design inspiration from **Vektora Studio**" : {
+
     },
     "Features.Activity.ActivityScreen" : {
       "localizations" : {

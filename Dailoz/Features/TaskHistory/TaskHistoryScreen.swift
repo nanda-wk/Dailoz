@@ -50,14 +50,14 @@ struct TaskHistoryScreen: View {
             navTitle = status.rawValue
             vm.searchFilter.status = status
             switch status {
-                case .completed:
-                    contentUnavailabelText = "Dailoz.ContentUnavailable.Completed"
-                case .pending:
-                    contentUnavailabelText = "Dailoz.ContentUnavailable.Pending"
-                case .canceled:
-                    contentUnavailabelText = "Dailoz.ContentUnavailable.Canceled"
-                case .onGoing:
-                    contentUnavailabelText = "Dailoz.ContentUnavailable.OnGoing"
+            case .completed:
+                contentUnavailabelText = "Dailoz.ContentUnavailable.Completed"
+            case .pending:
+                contentUnavailabelText = "Dailoz.ContentUnavailable.Pending"
+            case .canceled:
+                contentUnavailabelText = "Dailoz.ContentUnavailable.Canceled"
+            case .onGoing:
+                contentUnavailabelText = "Dailoz.ContentUnavailable.OnGoing"
             }
 
             vm.fetchTasks(offset: 0)

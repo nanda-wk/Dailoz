@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		53041D7D2D311E4400716B4F /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 53041D7B2D311E4400716B4F /* LICENSE */; };
+		53041D7E2D311E4400716B4F /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 53041D7C2D311E4400716B4F /* README.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		53631FB72CFC427D005F5C18 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +29,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		53041D7B2D311E4400716B4F /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		53041D7C2D311E4400716B4F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		53631FA62CFC427B005F5C18 /* Dailoz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Dailoz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		53631FB62CFC427D005F5C18 /* DailozTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DailozTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		53631FC02CFC427D005F5C18 /* DailozUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DailozUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -88,6 +95,8 @@
 		53631F9D2CFC427B005F5C18 = {
 			isa = PBXGroup;
 			children = (
+				53041D7B2D311E4400716B4F /* LICENSE */,
+				53041D7C2D311E4400716B4F /* README.md */,
 				53631FA82CFC427B005F5C18 /* Dailoz */,
 				53631FB92CFC427D005F5C18 /* DailozTests */,
 				53631FC32CFC427D005F5C18 /* DailozUITests */,
@@ -226,6 +235,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				53041D7D2D311E4400716B4F /* LICENSE in Resources */,
+				53041D7E2D311E4400716B4F /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

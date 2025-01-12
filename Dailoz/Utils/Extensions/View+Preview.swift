@@ -13,6 +13,8 @@ extension View {
         userName: String = "Nanda",
         language: AppLanguage = .en_US
     ) -> some View {
+        TaskEntity.preview(count: 4)
+        TaskEntity.preview(count: 4)
         let preferences = UserPreferences()
         preferences.userName = userName
         preferences.appLang = language

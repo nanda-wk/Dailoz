@@ -12,7 +12,6 @@ struct ProfileScreen: View {
     @EnvironmentObject var preferences: UserPreferences
     @State private var showNameEditor = false
 
-
     var body: some View {
         List {
             VStack {
@@ -52,6 +51,14 @@ struct ProfileScreen: View {
                     .tint(.royalBlue)
             } header: {
                 Text("Features.Profile.ProfileScreen.SettingHeader.Title")
+            }
+
+            Section {
+                Link(destination: URL(string: "https://www.sketchappsources.com/free-source/4757-to-do-daily-activities-app-sketch-freebie-resource.html")!) {
+                    Text("Design inspiration from **Vektora Studio**")
+                }
+            } header: {
+                Text("Aknowledgement")
             }
         }
         .safeAreaInset(edge: .bottom) {

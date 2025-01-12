@@ -111,7 +111,7 @@ final class TaskRepository {
         guard let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: date)?.start else {
             return results
         }
-        guard let endOfWeek = calendar.date(byAdding: .day, value: 6, to: startOfWeek) else {
+        guard let endOfWeek = calendar.date(byAdding: .day, value: 7, to: startOfWeek) else {
             return results
         }
 
@@ -139,7 +139,7 @@ final class TaskRepository {
                 }
             }
         }
-        
+
         for weekday in Weekday.allCases {
             if let typecounts = groupedData[weekday] {
                 let day = weekday.localized(lang)
@@ -239,20 +239,20 @@ final class TaskRepository {
 
         func localized(_ lang: AppLanguage) -> String {
             switch self {
-                case .Sunday:
-                    lang == .en_US ? "Sun" : "နွေ"
-                case .Monday:
-                    lang == .en_US ? "Mon" : "လာ"
-                case .Tuesday:
-                    lang == .en_US ? "Tue" : "ဂါ"
-                case .Wednesday:
-                    lang == .en_US ? "Wed" : "ဟူး"
-                case .Thursday:
-                    lang == .en_US ? "Thu" : "တေး"
-                case .Friday:
-                    lang == .en_US ? "Fri" : "ကြာ"
-                case .Saturday:
-                    lang == .en_US ? "Sat" : "နေ"
+            case .Sunday:
+                lang == .en_US ? "Sun" : "နွေ"
+            case .Monday:
+                lang == .en_US ? "Mon" : "လာ"
+            case .Tuesday:
+                lang == .en_US ? "Tue" : "ဂါ"
+            case .Wednesday:
+                lang == .en_US ? "Wed" : "ဟူး"
+            case .Thursday:
+                lang == .en_US ? "Thu" : "တေး"
+            case .Friday:
+                lang == .en_US ? "Fri" : "ကြာ"
+            case .Saturday:
+                lang == .en_US ? "Sat" : "နေ"
             }
         }
     }

@@ -18,9 +18,9 @@ enum AppLanguage: String, CaseIterable, Identifiable {
     func title(_ lang: Self) -> String {
         switch self {
         case .en_US:
-                return lang == .en_US ? "English" : "အင်္ဂလိပ်"
+            lang == .en_US ? "English" : "အင်္ဂလိပ်"
         case .my_MM:
-            return lang == .en_US ? "Myanmar" :"မြန်မာ"
+            lang == .en_US ? "Myanmar" : "မြန်မာ"
         }
     }
 }

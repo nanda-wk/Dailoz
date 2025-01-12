@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TabScreen: View {
     @EnvironmentObject var uiStateManager: UIStateManager
-    @State private var selected: TabItem = .home
+    @AppStorage("selectedTab") var selected: TabItem = .home
     @State private var showTaskPlanScreen = false
 
     var body: some View {

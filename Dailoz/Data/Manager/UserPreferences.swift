@@ -19,7 +19,8 @@ final class UserPreferences: ObservableObject {
     func setLanguage() {
         let languageCode = appLang.rawValue
         guard let path = Bundle.main.path(forResource: languageCode, ofType: "lproj"),
-              let newBundle = Bundle(path: path) else {
+              let newBundle = Bundle(path: path)
+        else {
             print("Localization for \(languageCode) not found. Falling back to default.")
             bundle = .main
             return

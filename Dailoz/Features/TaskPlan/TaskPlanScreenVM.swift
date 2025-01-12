@@ -96,8 +96,12 @@ final class TaskPlanScreenVM: ObservableObject {
     }
 
     func toggleTagSelection(_ tag: TagEntity) {
-        if !tags.insert(tag).inserted {
+        if tags.contains(tag) {
             tags.remove(tag)
+        } else {
+            if tags.count < 2 {
+                tags.insert(tag)
+            }
         }
     }
 
