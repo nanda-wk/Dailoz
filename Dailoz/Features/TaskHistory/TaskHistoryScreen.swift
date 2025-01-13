@@ -60,13 +60,13 @@ struct TaskHistoryScreen: View {
                 contentUnavailabelText = "Dailoz.ContentUnavailable.OnGoing"
             }
 
-            vm.fetchTasks(offset: 0)
+            vm.fetchTasks(offset: 0, lang: preferences.appLang)
         }
         .onChange(of: vm.searchFilter) {
-            vm.fetchTasks(offset: 0)
+            vm.fetchTasks(offset: 0, lang: preferences.appLang)
         }
         .onChange(of: uiStateManager.refreshId) {
-            vm.fetchTasks(offset: 0)
+            vm.fetchTasks(offset: 0, lang: preferences.appLang)
         }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -102,7 +102,6 @@ extension TaskHistoryScreen {
         }
     }
 
-    // TODO: - Need to implement lazy loading tasks from Core Data.
     @ViewBuilder
     private func TaskListByDate() -> some View {
         let taskListIsEmpty = vm.tasks.isEmpty

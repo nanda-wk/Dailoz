@@ -62,7 +62,8 @@ final class TaskRepository {
         monthly: Date? = nil,
         daily: Date? = nil,
         ascending: Bool = false,
-        offset: Int = 0
+        offset: Int = 0,
+        lang: AppLanguage = .en_US
     ) -> [String: [TaskEntity]] {
         var result: [String: [TaskEntity]] = [:]
         let tasks = localDataSource.fetchTasks(
@@ -76,7 +77,7 @@ final class TaskRepository {
             offset: offset
         )
         result = Dictionary(grouping: tasks) { task -> String in
-            task.date.format(.dMMMMyyyy)
+            task.date.format(.ddMMMMyyyy, language: lang)
         }
 
         return result

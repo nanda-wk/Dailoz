@@ -23,7 +23,7 @@ final class TaskHistoryScreenVM: ObservableObject {
         searchFilter.isMonthly = true
     }
 
-    func fetchTasks(offset: Int? = nil) {
+    func fetchTasks(offset: Int? = nil, lang: AppLanguage = .en_US) {
         guard !isLoading else { return }
         isLoading = true
 
@@ -43,9 +43,10 @@ final class TaskHistoryScreenVM: ObservableObject {
             types: Array(searchFilter.sortByType),
             status: statusList,
             monthly: searchFilter.isMonthly ? searchFilter.date : nil,
-            offset: self.offset
+            offset: self.offset,
+            lang: lang
         )
-        for (date, newTasks) in fetchedTasks {
+        for (date, newTasks) in fetchedTasks.sorted(by: {$0.key > $1.key}) {
             if tasks[date] != nil {
                 tasks[date]?.append(contentsOf: newTasks)
             } else {

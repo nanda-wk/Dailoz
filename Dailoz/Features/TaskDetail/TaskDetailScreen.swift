@@ -90,7 +90,7 @@ extension TaskDetailScreen {
     @ViewBuilder
     private func DetailTimeCard(isDate: Bool = true, lang: AppLanguage) -> some View {
         let title = isDate ? lang == .en_US ? "Est. Date" : "ခန့်မှန်းရက်" : lang == .en_US ? "Est. Time" : "ခန့်မှန်းချိန်"
-        let date = isDate ? task.date.format(.dMMMMyyyy, language: lang) : task.timeRange(lang)
+        let date = isDate ? task.date.format(.ddMMMMyyyy, language: lang) : task.timeRange(lang)
         let background: Color = switch task.statusEnum {
         case .completed:
             .completed

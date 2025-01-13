@@ -102,7 +102,7 @@ extension TaskPlanScreen {
                 .foregroundStyle(.textSecondary)
 
             HStack {
-                Text(vm.date.format(.dMMMMyyyy, language: preferences.appLang))
+                Text(vm.date.format(.ddMMMMyyyy, language: preferences.appLang))
                     .font(.robotoM(18))
                     .foregroundStyle(.textPrimary)
 

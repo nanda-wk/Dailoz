@@ -77,10 +77,10 @@ extension TaskOverviewScreen {
 
     @ViewBuilder
     private func TaskGroupedHourSection() -> some View {
-        let today = if Date().format(.dMMMMyyyy) == vm.searchFilter.date.format(.dMMMMyyyy) {
+        let today = if Date().format(.ddMMMMyyyy) == vm.searchFilter.date.format(.ddMMMMyyyy) {
             preferences.appLang == .en_US ? "Today" : "ဒီနေ့"
         } else {
-            vm.searchFilter.date.format(.dMMMMyyyy, language: preferences.appLang)
+            vm.searchFilter.date.format(.ddMMMMyyyy, language: preferences.appLang)
         }
         HStack {
             Text(today)
@@ -100,7 +100,7 @@ extension TaskOverviewScreen {
                 .foregroundStyle(.royalBlue)
                 .padding()
         } else {
-            ForEach(vm.tasks.sorted(by: { $0.key > $1.key }), id: \.key) { time, tasks in
+            ForEach(vm.tasks.sorted(by: { $0.key < $1.key }), id: \.key) { time, tasks in
                 TaskList(time: time, tasks: tasks)
             }
         }
